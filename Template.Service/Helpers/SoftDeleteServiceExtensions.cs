@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Template.Entities.Abstract;
-using Template.Service.Abstract;
 
 namespace Template.Service.Helpers
 {

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Template.Data;
+using Template.Service;
 
 namespace Template.Api
 {
@@ -29,8 +30,7 @@ namespace Template.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
+            services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Template.Api",
@@ -38,12 +38,13 @@ namespace Template.Api
                 });
             });
 
-            services.AddDbContext<TemplateContext>(options =>
-            {
+            services.AddDbContext<TemplateContext>(options => {
                 options.EnableSensitiveDataLogging();
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly("Template.Data"));
             });
+
+            services.AddScoped<IBookService, BookService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,8 +63,7 @@ namespace Template.Api
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
         }

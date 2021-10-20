@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Template.Data;
-using Template.Service.Helpers;
+using Template.Common.Structs;
+using Template.Service;
 
 namespace Template.Api.Controllers
 {
@@ -11,7 +10,7 @@ namespace Template.Api.Controllers
     [Route("[controller]/[action]")]
     public class WeatherForecastController : ControllerBase
     {
-        private readonly TemplateContext _context;
+        private readonly IBookService _bookService;
 
         private static readonly string[] Summaries = new[]
         {
@@ -20,26 +19,28 @@ namespace Template.Api.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, TemplateContext context)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IBookService bookService)
         {
             _logger = logger;
-            _context = context;
+            _bookService = bookService;
         }
 
+        [Authorize]
         [HttpGet]
-        public object Get1()
+        public object Get(int day = 10)
         {
-            _context.Books.Where(x => x.AuthorId == new Guid()).ExcludeDeleted();
-            _context.Books.ExcludeDeleted();
-            return _context.Books.ToList();
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-                {
-                    Date = DateTime.Now.AddDays(index),
-                    TemperatureC = rng.Next(-20, 55),
-                    Summary = Summaries[rng.Next(Summaries.Length)]
-                })
-                .ToArray();
+            var pageHolder = PageHolder.Create(0, 200);
+
+            for (int i = 0; i < 1000 * 1000; i++)
+            {
+                var a = PageHolder.Create(0, 200);
+            }
+
+            return new
+            {
+                Books = _bookService.GetNewBooks(day, pageHolder),
+                TotalCount = pageHolder.TotalCount
+            };
         }
     }
 }

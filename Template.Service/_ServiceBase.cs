@@ -1,15 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Template.Data;
 using Template.Entities.Abstract;
-using Template.Entities.Concrete;
-using Template.Service.Concrete;
-using Template.Service.Helpers;
 
-namespace Template.Service.Abstract
+namespace Template.Service
 {
-    public abstract class ServiceBase<T> where T : EntityBase
+    public interface IServiceBase<T> where T : EntityBase
+    {
+        public T Add(T entity);
+        public T Update(T entity);
+        public T Delete(T entity);
+        public T Get(Guid id);
+    }
+    
+    public abstract class ServiceBase<T> : IServiceBase<T> where T : EntityBase
     {
         private DbSet<T> _dbSet;
         protected DbSet<T> DbSet => _dbSet ?? Context.Set<T>();
