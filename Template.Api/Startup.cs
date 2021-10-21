@@ -1,18 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Template.Common;
 using Template.Data;
+using Template.Entities.Concrete;
 using Template.Service;
 
 namespace Template.Api
@@ -38,12 +44,44 @@ namespace Template.Api
                 });
             });
 
+            // bind jwt settings
+            var jwtSettings = new JwtSettings();
+            Configuration.Bind(nameof(jwtSettings), jwtSettings);
+            services.AddSingleton(jwtSettings);
+
+            services.AddAuthentication(x => {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x => {
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    RequireExpirationTime = false,
+                    ValidateLifetime = true,
+                };
+            });
+
+            // add MicrosoftIdentity with EntityFramework
+            services.AddIdentity<User, CustomUserRole>()
+                .AddEntityFrameworkStores<TemplateContext>();
+
+            // add EntityFramework
             services.AddDbContext<TemplateContext>(options => {
                 options.EnableSensitiveDataLogging();
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly("Template.Data"));
             });
 
+            // add identity service di
+            services.AddScoped<IIdentityService, IdentityService>();
+            // services.AddScoped<UserManager<User>, CustomUserManager>();
+            
+            // add cutom services
             services.AddScoped<IBookService, BookService>();
         }
 

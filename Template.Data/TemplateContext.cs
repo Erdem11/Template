@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Template.Entities.Concrete;
 
 namespace Template.Data
@@ -15,7 +18,7 @@ namespace Template.Data
     // update database
     // dotnet ef --startup-project ..\Template.Api database update
     
-    public class TemplateContext : DbContext
+    public class TemplateContext : IdentityDbContext<User, CustomUserRole, Guid>
     {
         public TemplateContext(DbContextOptions<TemplateContext> options)
             : base(options)

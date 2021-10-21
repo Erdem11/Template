@@ -13,7 +13,7 @@ namespace Template.Service.Helpers
         public static List<T> GetWithCount<T>(this ServiceBase<T> service,
             PageHolder pageHolder,
             Expression<Func<T, bool>> predicate)
-            where T : EntityBase
+            where T : class, IEntityBase 
         {
             var query = service.Context.Set<T>().Where(predicate);
 
@@ -23,7 +23,7 @@ namespace Template.Service.Helpers
         internal static List<T> GetWithCount<T>(this DbSet<T> dbSet,
             PageHolder pageHolder,
             Expression<Func<T, bool>> predicate)
-            where T : EntityBase
+            where T : class, IEntityBase 
         {
             var query = dbSet.Where(predicate);
 
@@ -33,14 +33,14 @@ namespace Template.Service.Helpers
         internal static List<T> GetWithCount<T>(this IQueryable<T> queryable,
             PageHolder pageHolder,
             Expression<Func<T, bool>> predicate)
-            where T : EntityBase
+            where T : class, IEntityBase 
         {
             var query = queryable.Where(predicate);
 
             return GetWithCountQueryExecute(pageHolder, query);
         }
 
-        private static List<T> GetWithCountQueryExecute<T>(PageHolder pageHolder, IQueryable<T> query) where T : EntityBase
+        private static List<T> GetWithCountQueryExecute<T>(PageHolder pageHolder, IQueryable<T> query) where T : class, IEntityBase 
         {
             var results = query
                 .Select(p => new

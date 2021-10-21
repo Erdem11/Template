@@ -3,8 +3,8 @@
 namespace Template.Entities.Abstract
 {
     public interface ILocalizable<TLocalizable, TLanguage>
-        where TLanguage : EntityBase, ILanguage<TLocalizable>
-        where TLocalizable : EntityBase, ILocalizable<TLocalizable, TLanguage>
+        where TLanguage : class, IEntityBase, ILanguage<TLocalizable> 
+        where TLocalizable : class, IEntityBase, ILocalizable<TLocalizable, TLanguage> 
     {
         public List<TLanguage> Languages { get; set; }
     }

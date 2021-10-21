@@ -5,7 +5,7 @@ using Template.Entities.Abstract;
 
 namespace Template.Service
 {
-    public interface IServiceBase<T> where T : EntityBase
+    public interface IServiceBase<T> where T : class, IEntityBase 
     {
         public T Add(T entity);
         public T Update(T entity);
@@ -13,11 +13,11 @@ namespace Template.Service
         public T Get(Guid id);
     }
     
-    public abstract class ServiceBase<T> : IServiceBase<T> where T : EntityBase
+    public abstract class ServiceBase<T> : IServiceBase<T> where T : class, IEntityBase 
     {
         private DbSet<T> _dbSet;
-        protected DbSet<T> DbSet => _dbSet ?? Context.Set<T>();
-        
+        protected DbSet<T> DbSet => _dbSet ??= Context.Set<T>();
+
         internal readonly TemplateContext Context;
         protected ServiceBase(TemplateContext context)
         {

@@ -12,7 +12,7 @@ namespace Template.Service.Helpers
             return query.Where(x => !exclude || !x.IsDeleted);
         }
 
-        public static T SoftDelete<T>(this ServiceBase<T> service, T entity) where T : EntityBase, ISoftDelete
+        public static T SoftDelete<T>(this ServiceBase<T> service, T entity) where T : class, IEntityBase, ISoftDelete 
         {
             entity.IsDeleted = true;
             entity.DeletedAt = DateTime.UtcNow;
@@ -23,7 +23,7 @@ namespace Template.Service.Helpers
             return entity;
         }
 
-        public static T SoftDelete<T>(this ServiceBase<T> service, Guid id) where T : EntityBase, ISoftDelete
+        public static T SoftDelete<T>(this ServiceBase<T> service, Guid id) where T : class, IEntityBase, ISoftDelete 
         {
             var entity = service.Context.Set<T>().Find(id);
 

@@ -9,8 +9,8 @@ namespace Template.Service.Helpers
     public static class LocalizableServiceExtensions
     {
         public static TLocalizable GetWitLanguage<TLocalizable, TLanguage>(this ServiceBase<TLocalizable> service, Guid id)
-            where TLanguage : EntityBase, ILanguage<TLocalizable>
-            where TLocalizable : EntityBase, ILocalizable<TLocalizable, TLanguage>
+            where TLanguage : class, IEntityBase, ILanguage<TLocalizable> 
+            where TLocalizable : class, IEntityBase, ILocalizable<TLocalizable, TLanguage> 
         {
             var result = service.Context.Set<TLocalizable>()
                 .Include(x => x.Languages)
@@ -19,8 +19,8 @@ namespace Template.Service.Helpers
             return result;
         }
         public static TLocalizable GetWitLanguage<TLocalizable, TLanguage>(this ServiceBase<TLocalizable> service, Guid id, Languages language)
-            where TLanguage : EntityBase, ILanguage<TLocalizable>
-            where TLocalizable : EntityBase, ILocalizable<TLocalizable, TLanguage>
+            where TLanguage : class, IEntityBase, ILanguage<TLocalizable> 
+            where TLocalizable : class, IEntityBase, ILocalizable<TLocalizable, TLanguage> 
         {
             var result = service.Context.Set<TLocalizable>()
                 .Include(x => x.Languages.FirstOrDefault(tLanguage => tLanguage.Language == language))

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Template.Common.Structs;
@@ -11,6 +12,7 @@ namespace Template.Api.Controllers
     public class WeatherForecastController : ControllerBase
     {
         private readonly IBookService _bookService;
+        private readonly IIdentityService _identityService;
 
         private static readonly string[] Summaries = new[]
         {
@@ -19,10 +21,11 @@ namespace Template.Api.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IBookService bookService)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IBookService bookService, IIdentityService identityService)
         {
             _logger = logger;
             _bookService = bookService;
+            _identityService = identityService;
         }
 
         [Authorize]
@@ -41,6 +44,19 @@ namespace Template.Api.Controllers
                 Books = _bookService.GetNewBooks(day, pageHolder),
                 TotalCount = pageHolder.TotalCount
             };
+        }
+
+        [HttpGet]
+        public object Register(string email, string password)
+        {
+            return _identityService.Register(email,password);
+        }
+        
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public object TokenTest()
+        {
+            return default;
         }
     }
 }
