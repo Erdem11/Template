@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Template.Data;
 
 namespace Template.Api
 {
@@ -13,7 +16,16 @@ namespace Template.Api
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+
+            // auto migration on start
+            // using (var serviceScope = host.Services.CreateScope())
+            // {
+            //     var dbContext = serviceScope.ServiceProvider.GetRequiredService<TemplateContext>();
+            //     dbContext.Database.Migrate();
+            // }
+
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
