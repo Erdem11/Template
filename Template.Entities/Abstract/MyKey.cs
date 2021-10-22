@@ -1,0 +1,44 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
+namespace Template.Entities.Abstract
+{
+    public struct MyKey : IEquatable<MyKey>
+    {
+        public Guid Id { get; set; }
+        public bool Equals(MyKey other) => Id.Equals(other.Id);
+
+        public override bool Equals(object obj) => obj is MyKey other && Equals(other);
+
+        public override int GetHashCode() => Id.GetHashCode();
+
+        public static bool operator ==(MyKey a, MyKey b) => a.Id == b.Id;
+        public static bool operator !=(MyKey a, MyKey b) => !(a == b);
+
+        public static implicit operator MyKey(Guid val)
+        {
+            return new()
+            {
+                Id = val
+            };
+        }
+
+        public static explicit operator Guid(MyKey val)
+        {
+            return val.Id;
+        }
+
+        private static ValueConverter<MyKey, Guid> _converter;
+
+        public static ValueConverter<MyKey, Guid> Converter
+        {
+            get
+            {
+                return _converter ??= new ValueConverter<MyKey, Guid>(v => v.Id, v => new MyKey
+                {
+                    Id = v
+                });
+            }
+        }
+    }
+}

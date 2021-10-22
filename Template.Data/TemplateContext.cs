@@ -3,8 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Template.Entities.Abstract;
 using Template.Entities.Concrete;
+using Template.Entities.Concrete.IdentityModels;
 
 namespace Template.Data
 {
@@ -20,16 +22,39 @@ namespace Template.Data
     // update database
     // dotnet ef --startup-project ..\Template.Api database update
 
-    public class TemplateContext : IdentityDbContext<User, CustomUserRole, Guid>
+    public class TemplateContext : IdentityDbContext<User, Role, MyKey, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
     {
         public TemplateContext(DbContextOptions<TemplateContext> options)
             : base(options)
         {
         }
 
-        private void AddCreatedDateToAddedEntities()
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            foreach (var entry in ChangeTracker.Entries())
+            AddCustomKeyConversation(builder);
+
+            base.OnModelCreating(builder);
+        }
+
+        private static void AddCustomKeyConversation(ModelBuilder builder)
+        {
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.ClrType.GetProperties())
+                {
+                    if (property.PropertyType == typeof(MyKey))
+                    {
+                        builder.Entity(entityType.ClrType)
+                            .Property<MyKey>(property.Name)
+                            .HasConversion(MyKey.Converter);
+                    }
+                }
+            }
+        }
+
+        private static void AddCreatedDateToAddedEntities(ChangeTracker changeTracker)
+        {
+            foreach (var entry in changeTracker.Entries())
             {
                 if (entry.Entity is not IEntityBase entity)
                     continue;
@@ -43,13 +68,13 @@ namespace Template.Data
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            AddCreatedDateToAddedEntities();
+            AddCreatedDateToAddedEntities(ChangeTracker);
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
         {
-            AddCreatedDateToAddedEntities();
+            AddCreatedDateToAddedEntities(ChangeTracker);
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 

@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Template.Common;
 using Template.Data;
 using Template.Entities.Concrete;
+using Template.Entities.Concrete.IdentityModels;
 using Template.Service;
 
 namespace Template.Middleware
@@ -95,7 +96,7 @@ namespace Template.Middleware
         private static void ConfigureMicrosoftIdentity(this IServiceCollection services)
         {
             // add MicrosoftIdentity with EntityFramework
-            services.AddIdentity<User, CustomUserRole>()
+            services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<TemplateContext>();
 
             // add identity service di

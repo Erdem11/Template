@@ -1,5 +1,6 @@
 ﻿using System;
 using Template.Entities.Abstract;
+using Template.Entities.Concrete.IdentityModels;
 
 namespace Template.Entities.Concrete
 {
@@ -11,6 +12,6 @@ namespace Template.Entities.Concrete
         public bool Used { get; set; }
         public bool Invalidated { get; set; }
         public User User { get; set; }
-        public Guid UserId { get; set; }
+        public MyKey UserId { get; set; }
     }
 }

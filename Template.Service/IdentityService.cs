@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Template.Common;
 using Template.Data;
 using Template.Entities.Concrete;
+using Template.Entities.Concrete.IdentityModels;
 
 namespace Template.Service
 {

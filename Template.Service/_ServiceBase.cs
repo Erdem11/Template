@@ -5,15 +5,15 @@ using Template.Entities.Abstract;
 
 namespace Template.Service
 {
-    public interface IServiceBase<T> where T : class, IEntityBase 
+    public interface IServiceBase<T> where T : class, IEntityBase
     {
         public T Add(T entity);
         public T Update(T entity);
         public T Delete(T entity);
-        public T Get(Guid id);
+        public T Get(MyKey id);
     }
     
-    public abstract class ServiceBase<T> : IServiceBase<T> where T : class, IEntityBase 
+    public abstract class ServiceBase<T> : IServiceBase<T> where T : class, IEntityBase
     {
         private DbSet<T> _dbSet;
         protected DbSet<T> DbSet => _dbSet ??= Context.Set<T>();
@@ -48,7 +48,7 @@ namespace Template.Service
             return entity;
         }
 
-        public T Get(Guid id)
+        public T Get(MyKey id)
         {
             var result = Context.Set<T>().Find(id);
 

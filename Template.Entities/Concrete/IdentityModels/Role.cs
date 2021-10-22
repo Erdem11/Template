@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Identity;
 using Template.Entities.Abstract;
 
-namespace Template.Entities.Concrete
+namespace Template.Entities.Concrete.IdentityModels
 {
-    public class CustomUserRole : IdentityRole<Guid>, IEntityBase
+    public class Role : IdentityRole<MyKey>, IEntityBase
     {
+        public MyKey Id { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

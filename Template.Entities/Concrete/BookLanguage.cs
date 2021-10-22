@@ -1,4 +1,5 @@
-﻿using Template.Entities.Abstract;
+﻿using System;
+using Template.Entities.Abstract;
 using Template.Entities.Types;
 
 namespace Template.Entities.Concrete
@@ -7,7 +8,7 @@ namespace Template.Entities.Concrete
     {
         public string Name { get; set; }
         
-        public int SourceId { get; set; }
+        public MyKey SourceId { get; set; }
         public Book Source { get; set; }
         public Languages Language { get; set; }
     }

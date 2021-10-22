@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
 using Template.Entities.Abstract;
+using Template.Entities.Concrete.IdentityModels;
 
 namespace Template.Entities.Concrete
 {
