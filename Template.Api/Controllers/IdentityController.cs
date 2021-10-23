@@ -1,5 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
+using Template.Common.Models.Identity.Requests;
+using Template.Common.Models.Identity.Responses;
+using Template.Common.Models.ModelBase;
 using Template.Service;
 
 namespace Template.Api.Controllers
@@ -15,17 +18,29 @@ namespace Template.Api.Controllers
             _identityService = identityService;
         }
 
-        [HttpGet]
-        public object Register(string email, string password)
+        [HttpPost]
+        public AuthResponse Register(RegisterRequest request)
         {
-            return _identityService.Register(email, password);
+            return _identityService.Register(request);
         }
 
         [HttpPost]
-        public object AddUserClaim(Guid userId, string claimName)
+        public AuthResponse Login(LoginRequest request)
         {
-            _identityService.AddUserClaim(userId, claimName);
-            return default;
+            return _identityService.Login(request);
+        }
+
+        [HttpPost]
+        public AuthResponse RefreshToken(RefreshTokenRequest request)
+        {
+            return _identityService.RefreshToken(request);
+        }
+
+        [HttpPost]
+        public EmptyResponse AddUserClaim(Guid userId, string claimName)
+        {
+            var result = _identityService.AddUserClaim(userId, claimName);
+            return result;
         }
     }
 }

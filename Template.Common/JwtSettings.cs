@@ -6,5 +6,6 @@ namespace Template.Common
     {
         public string Secret { get; set; }
         public TimeSpan TokenLifetime { get; set; }
+        public TimeSpan RefreshTokenLifeTime { get; set; }
     }
 }

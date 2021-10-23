@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Template.Common.Structs;
 using Template.Data;
 using Template.Entities.Abstract;
 

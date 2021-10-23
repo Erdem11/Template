@@ -1,11 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Template.Entities.Abstract
+namespace Template.Common.Structs
 {
     public struct MyKey : IEquatable<MyKey>
     {
         public Guid Id { get; set; }
+        public Guid ToPrimitive() => Id;
         public bool Equals(MyKey other) => Id.Equals(other.Id);
 
         public override bool Equals(object obj) => obj is MyKey other && Equals(other);
@@ -40,5 +41,7 @@ namespace Template.Entities.Abstract
                 });
             }
         }
+
+        public override string ToString() => Id.ToString();
     }
 }

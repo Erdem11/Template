@@ -1,4 +1,5 @@
 ﻿using System;
+using Template.Common.Structs;
 using Template.Entities.Abstract;
 using Template.Entities.Types;
 

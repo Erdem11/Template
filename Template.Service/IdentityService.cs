@@ -7,6 +7,9 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Template.Common;
+using Template.Common.Models.Identity.Requests;
+using Template.Common.Models.Identity.Responses;
+using Template.Common.Models.ModelBase;
 using Template.Data;
 using Template.Entities.Concrete;
 using Template.Entities.Concrete.IdentityModels;
@@ -15,8 +18,10 @@ namespace Template.Service
 {
     public interface IIdentityService
     {
-        string Register(string email, string password);
-        void AddUserClaim(Guid userId, string claimName);
+        AuthResponse Register(RegisterRequest request);
+        EmptyResponse AddUserClaim(Guid userId, string claimName);
+        AuthResponse Login(LoginRequest request);
+        AuthResponse RefreshToken(RefreshTokenRequest request);
     }
 
     public class IdentityService : IIdentityService
@@ -34,15 +39,15 @@ namespace Template.Service
             _templateContext = templateContext;
         }
 
-        public string Register(string email, string password)
+        public AuthResponse Register(RegisterRequest request)
         {
             var newUser = new User
             {
-                Email = email,
-                UserName = email,
+                Email = request.Email,
+                UserName = request.Email,
             };
 
-            var createdUser = _userManager.CreateAsync(newUser, password).Result;
+            var createdUser = _userManager.CreateAsync(newUser, request.Password).Result;
 
             if (!createdUser.Succeeded)
             {
@@ -51,14 +56,36 @@ namespace Template.Service
 
             return GenerateAuthenticationResultForUser(newUser);
         }
-        
-        public void AddUserClaim(Guid userId, string claimName)
+
+        public AuthResponse Login(LoginRequest request)
+        {
+            var user = _userManager.FindByEmailAsync(request.Email).Result;
+
+            if (user == default)
+            {
+                return ResponseBase.ErrorResponse<AuthResponse>("User does not exist");
+            }
+
+            var isPasswordValid = _userManager.CheckPasswordAsync(user, request.Password).Result;
+
+            if (!isPasswordValid)
+            {
+                return ResponseBase.ErrorResponse<AuthResponse>("User/password combination is wrong");
+            }
+
+            return GenerateAuthenticationResultForUser(user);
+        }
+
+        public EmptyResponse AddUserClaim(Guid userId, string claimName)
         {
             var user = _userManager.FindByIdAsync(userId.ToString()).Result;
-            _userManager.AddClaimAsync(user, new Claim(claimName, "true"));
+            _userManager.AddClaimAsync(user, new Claim(claimName, "true")).Wait();
             _templateContext.SaveChanges();
+
+            return EmptyResponse.Create();
         }
-        private string GenerateAuthenticationResultForUser(User user)
+        
+        private AuthResponse GenerateAuthenticationResultForUser(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
@@ -74,7 +101,7 @@ namespace Template.Service
 
             var userClaims = _userManager.GetClaimsAsync(user).Result;
             claims.AddRange(userClaims);
-            
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -88,7 +115,7 @@ namespace Template.Service
             {
                 JwtId = token.Id,
                 UserId = user.Id,
-                ExpiryDate = DateTime.UtcNow.AddMonths(6),
+                ExpiryDate = DateTime.UtcNow.Add(_jwtSettings.RefreshTokenLifeTime),
             };
 
             _templateContext.RefreshTokens.Add(refreshToken);
@@ -96,12 +123,18 @@ namespace Template.Service
 
             var tokenString = tokenHandler.WriteToken(token);
 
-            return tokenString;
+            return new AuthResponse()
+            {
+                Token = tokenString,
+                TokenExpireDate = tokenDescriptor.Expires.GetValueOrDefault(),
+                RefreshToken = refreshToken.Id.ToPrimitive()
+            };
         }
 
-        public string RefreshToken(string token, string refreshToken)
+        public AuthResponse RefreshToken(RefreshTokenRequest request)
         {
-            var validatedToken = GetPrincipalFromToken(token);
+            var response = new AuthResponse();
+            var validatedToken = GetPrincipalFromToken(request.Token);
 
             if (validatedToken == null)
             {
@@ -110,48 +143,53 @@ namespace Template.Service
             }
 
             var expiryDateUnix = long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-
-            var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                .AddSeconds(expiryDateUnix);
+            
+            var expiryDateTimeUtc = DateTime.UnixEpoch.AddSeconds(expiryDateUnix);
 
             if (expiryDateTimeUtc > DateTime.UtcNow)
             {
                 // this token hasn't expired yet
-                return default;
+                response.Error = "This token has not expired yet";
+                return response;
             }
 
             var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value;
 
-            var storedRefreshToken = _templateContext.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken);
+            var storedRefreshToken = _templateContext.RefreshTokens.SingleOrDefault(x => x.Id == request.RefreshToken);
 
             if (storedRefreshToken == default)
             {
                 // this refresh token doesn't exist
-                return default;
+                response.Error = "this refresh token doesn't exist";
+                return response;
             }
 
             if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
             {
                 // this refresh token has expired
-                return default;
+                response.Error = "this refresh token has expired";
+                return response;
             }
 
             if (storedRefreshToken.Invalidated)
             {
                 // this refresh token has been Invalidated
-                return default;
+                response.Error = "this refresh token has been Invalidated";
+                return response;
             }
 
             if (storedRefreshToken.Used)
             {
                 // this refresh token has been Used
-                return default;
+                response.Error = "this refresh token has been Used";
+                return response;
             }
 
             if (storedRefreshToken.JwtId != jti)
             {
                 // this refresh does not match this JWT
-                return default;
+                response.Error = "this refresh does not match this JWT";
+                return response;
             }
 
             storedRefreshToken.Used = true;

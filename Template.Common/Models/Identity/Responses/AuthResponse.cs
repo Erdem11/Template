@@ -1,9 +1,9 @@
 ﻿using System;
-using Template.Api.Models.ModelBase;
+using Template.Common.Models.ModelBase;
 
-namespace Template.Api.Models.Responses
+namespace Template.Common.Models.Identity.Responses
 {
-    public class AuthResponse : ResponseBase<AuthResponse>, IResponse 
+    public class AuthResponse : ResponseBase
     {
         public string Token { get; set; }
         public DateTime TokenExpireDate { get; set; }

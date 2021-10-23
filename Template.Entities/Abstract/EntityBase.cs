@@ -1,5 +1,5 @@
-﻿// extern alias SystemPrivateCoreLib;
-using System;
+﻿using System;
+using Template.Common.Structs;
 
 namespace Template.Entities.Abstract
 {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Template.Common.Structs;
 using Template.Entities.Abstract;
 using Template.Entities.Concrete;
 using Template.Entities.Concrete.IdentityModels;
