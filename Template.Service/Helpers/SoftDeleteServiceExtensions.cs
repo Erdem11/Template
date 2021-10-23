@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Template.Common.Structs;
 using Template.Entities.Abstract;
 
 namespace Template.Service.Helpers
@@ -23,7 +24,7 @@ namespace Template.Service.Helpers
             return entity;
         }
 
-        public static T SoftDelete<T>(this ServiceBase<T> service, Guid id) where T : class, IEntityBase, ISoftDelete 
+        public static T SoftDelete<T>(this ServiceBase<T> service, MyKey id) where T : class, IEntityBase, ISoftDelete 
         {
             var entity = service.Context.Set<T>().Find(id);
 

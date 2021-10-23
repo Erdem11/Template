@@ -43,5 +43,9 @@ namespace Template.Common.Structs
         }
 
         public override string ToString() => Id.ToString();
+        public static MyKey? Parse(string s)
+        {
+            return Guid.TryParse(s, out var myKey) ? myKey : default(MyKey?);
+        }
     }
 }

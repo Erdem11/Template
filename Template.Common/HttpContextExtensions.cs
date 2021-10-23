@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Template.Common.Structs;
 
 namespace Template.Common
 {
     public static class HttpContextExtensions
     {
-        public static Guid? GetUserId(this HttpContext httpContext)
+        public static MyKey? GetUserId(this HttpContext httpContext)
         {
             if (httpContext?.User == default)
             {
@@ -15,7 +16,7 @@ namespace Template.Common
 
             var idString = httpContext.User.Claims.Single(x => x.Type == "id").Value;
             
-            return Guid.Parse(idString);
+            return MyKey.Parse(idString);
         }
     }
 }

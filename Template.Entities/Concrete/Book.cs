@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Template.Common.Structs;
 using Template.Entities.Abstract;
 using Template.Entities.Concrete.IdentityModels;
 
@@ -9,8 +10,8 @@ namespace Template.Entities.Concrete
     {
         public DateTime PublishDate { get; set; }
 
-        public Guid AuthorId { get; set; }
-        public Guid AddedUserId { get; set; }
+        public MyKey AuthorId { get; set; }
+        public MyKey AddedUserId { get; set; }
 
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }

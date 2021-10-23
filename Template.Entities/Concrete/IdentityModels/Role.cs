@@ -7,7 +7,7 @@ namespace Template.Entities.Concrete.IdentityModels
 {
     public class Role : IdentityRole<MyKey>, IEntityBase
     {
-        public MyKey Id { get; set; }
+        public new MyKey Id { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }
