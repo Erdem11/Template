@@ -1,6 +1,4 @@
-﻿using Template.Common.Models.Identity.Responses;
-
-namespace Template.Common.Models.ModelBase
+﻿namespace Template.Common.Models.ModelBase
 {
     public class ResponseBase : IResponse
     {
@@ -9,7 +7,7 @@ namespace Template.Common.Models.ModelBase
 
         public static T ErrorResponse<T>(Error error) where T : ResponseBase, new()
         {
-            return new T
+            return new()
             {
                 Error = error
             };

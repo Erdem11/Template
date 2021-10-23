@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +8,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Template.Common;
 using Template.Data;
-using Template.Entities.Concrete;
 using Template.Entities.Concrete.IdentityModels;
 using Template.Service;
 
@@ -18,7 +18,7 @@ namespace Template.Middleware
         public static void ConfigureCustomServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.ConfigureSwagger();
-            
+
             services.ConfigureJwtAuthSettings(configuration);
 
             services.ConfigureCustomAuthorization();
@@ -38,14 +38,14 @@ namespace Template.Middleware
                     Title = "Template.Api",
                     Version = "v1"
                 });
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\""
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
@@ -58,7 +58,7 @@ namespace Template.Middleware
                                 Id = "Bearer"
                             }
                         },
-                        System.Array.Empty<string>()
+                        Array.Empty<string>()
                     }
                 });
             });
@@ -78,7 +78,7 @@ namespace Template.Middleware
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 RequireExpirationTime = false,
-                ValidateLifetime = true,
+                ValidateLifetime = true
             };
 
             services.AddSingleton(tokenValidationParameters);

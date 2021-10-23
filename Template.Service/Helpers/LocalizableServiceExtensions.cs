@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Template.Common.Structs;
 using Template.Entities.Abstract;
@@ -10,8 +9,8 @@ namespace Template.Service.Helpers
     public static class LocalizableServiceExtensions
     {
         public static TLocalizable GetWitLanguage<TLocalizable, TLanguage>(this ServiceBase<TLocalizable> service, MyKey id)
-            where TLanguage : class, IEntityBase, ILanguage<TLocalizable> 
-            where TLocalizable : class, IEntityBase, ILocalizable<TLocalizable, TLanguage> 
+            where TLanguage : class, IEntityBase, ILanguage<TLocalizable>
+            where TLocalizable : class, IEntityBase, ILocalizable<TLocalizable, TLanguage>
         {
             var result = service.Context.Set<TLocalizable>()
                 .Include(x => x.Languages)
@@ -20,8 +19,8 @@ namespace Template.Service.Helpers
             return result;
         }
         public static TLocalizable GetWitLanguage<TLocalizable, TLanguage>(this ServiceBase<TLocalizable> service, MyKey id, Languages language)
-            where TLanguage : class, IEntityBase, ILanguage<TLocalizable> 
-            where TLocalizable : class, IEntityBase, ILocalizable<TLocalizable, TLanguage> 
+            where TLanguage : class, IEntityBase, ILanguage<TLocalizable>
+            where TLocalizable : class, IEntityBase, ILocalizable<TLocalizable, TLanguage>
         {
             var result = service.Context.Set<TLocalizable>()
                 .Include(x => x.Languages.FirstOrDefault(tLanguage => tLanguage.Language == language))

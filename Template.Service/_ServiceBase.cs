@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Template.Common.Structs;
 using Template.Data;
 using Template.Entities.Abstract;
@@ -13,17 +12,17 @@ namespace Template.Service
         public T Delete(T entity);
         public T Get(MyKey id);
     }
-    
+
     public abstract class ServiceBase<T> : IServiceBase<T> where T : class, IEntityBase
     {
-        private DbSet<T> _dbSet;
-        protected DbSet<T> DbSet => _dbSet ??= Context.Set<T>();
 
         internal readonly TemplateContext Context;
+        private DbSet<T> _dbSet;
         protected ServiceBase(TemplateContext context)
         {
             Context = context;
         }
+        protected DbSet<T> DbSet => _dbSet ??= Context.Set<T>();
 
         public T Add(T entity)
         {

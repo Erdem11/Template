@@ -26,10 +26,10 @@ namespace Template.Service
 
     public class IdentityService : IIdentityService
     {
-        private readonly UserManager<User> _userManager;
         private readonly JwtSettings _jwtSettings;
-        private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly TemplateContext _templateContext;
+        private readonly TokenValidationParameters _tokenValidationParameters;
+        private readonly UserManager<User> _userManager;
 
         public IdentityService(UserManager<User> userManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, TemplateContext templateContext)
         {
@@ -44,15 +44,13 @@ namespace Template.Service
             var newUser = new User
             {
                 Email = request.Email,
-                UserName = request.Email,
+                UserName = request.Email
             };
 
             var createdUser = _userManager.CreateAsync(newUser, request.Password).Result;
 
             if (!createdUser.Succeeded)
-            {
                 return default;
-            }
 
             return GenerateAuthenticationResultForUser(newUser);
         }
@@ -62,16 +60,12 @@ namespace Template.Service
             var user = _userManager.FindByEmailAsync(request.Email).Result;
 
             if (user == default)
-            {
                 return ResponseBase.ErrorResponse<AuthResponse>("User does not exist");
-            }
 
             var isPasswordValid = _userManager.CheckPasswordAsync(user, request.Password).Result;
 
             if (!isPasswordValid)
-            {
                 return ResponseBase.ErrorResponse<AuthResponse>("User/password combination is wrong");
-            }
 
             return GenerateAuthenticationResultForUser(user);
         }
@@ -84,52 +78,6 @@ namespace Template.Service
 
             return EmptyResponse.Create();
         }
-        
-        private AuthResponse GenerateAuthenticationResultForUser(User user)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
-
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("id", user.Id.ToString()),
-            };
-
-            var userClaims = _userManager.GetClaimsAsync(user).Result;
-            claims.AddRange(userClaims);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.Add(_jwtSettings.TokenLifetime),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            var refreshToken = new RefreshToken
-            {
-                JwtId = token.Id,
-                UserId = user.Id,
-                ExpiryDate = DateTime.UtcNow.Add(_jwtSettings.RefreshTokenLifeTime),
-            };
-
-            _templateContext.RefreshTokens.Add(refreshToken);
-            _templateContext.SaveChanges();
-
-            var tokenString = tokenHandler.WriteToken(token);
-
-            return new AuthResponse()
-            {
-                Token = tokenString,
-                TokenExpireDate = tokenDescriptor.Expires.GetValueOrDefault(),
-                RefreshToken = refreshToken.Id.ToPrimitive()
-            };
-        }
 
         public AuthResponse RefreshToken(RefreshTokenRequest request)
         {
@@ -137,13 +85,11 @@ namespace Template.Service
             var validatedToken = GetPrincipalFromToken(request.Token);
 
             if (validatedToken == null)
-            {
                 // invalid token
                 return default;
-            }
 
             var expiryDateUnix = long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-            
+
             var expiryDateTimeUtc = DateTime.UnixEpoch.AddSeconds(expiryDateUnix);
 
             if (expiryDateTimeUtc > DateTime.UtcNow)
@@ -201,6 +147,52 @@ namespace Template.Service
             return GenerateAuthenticationResultForUser(user);
         }
 
+        private AuthResponse GenerateAuthenticationResultForUser(User user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
+
+            var claims = new List<Claim>
+            {
+                new(JwtRegisteredClaimNames.Sub, user.Email),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new(JwtRegisteredClaimNames.Email, user.Email),
+                new(JwtRegisteredClaimNames.Email, user.Email),
+                new("id", user.Id.ToString())
+            };
+
+            var userClaims = _userManager.GetClaimsAsync(user).Result;
+            claims.AddRange(userClaims);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.Add(_jwtSettings.TokenLifetime),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            var refreshToken = new RefreshToken
+            {
+                JwtId = token.Id,
+                UserId = user.Id,
+                ExpiryDate = DateTime.UtcNow.Add(_jwtSettings.RefreshTokenLifeTime)
+            };
+
+            _templateContext.RefreshTokens.Add(refreshToken);
+            _templateContext.SaveChanges();
+
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return new AuthResponse
+            {
+                Token = tokenString,
+                TokenExpireDate = tokenDescriptor.Expires.GetValueOrDefault(),
+                RefreshToken = refreshToken.Id.ToPrimitive()
+            };
+        }
+
         private ClaimsPrincipal GetPrincipalFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -209,9 +201,7 @@ namespace Template.Service
             {
                 var principal = tokenHandler.ValidateToken(token, _tokenValidationParameters, out var validatedToken);
                 if (!IsJwtWithValidSecurityAlgorithm(validatedToken))
-                {
                     return null;
-                }
 
                 return principal;
             }
@@ -223,7 +213,7 @@ namespace Template.Service
 
         private bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)
         {
-            return (validatedToken is JwtSecurityToken jwtSecurityToken) &&
+            return validatedToken is JwtSecurityToken jwtSecurityToken &&
                    jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
         }
     }

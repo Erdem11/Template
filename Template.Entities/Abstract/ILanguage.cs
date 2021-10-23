@@ -1,5 +1,4 @@
-﻿using System;
-using Template.Common.Structs;
+﻿using Template.Common.Structs;
 using Template.Entities.Types;
 
 namespace Template.Entities.Abstract

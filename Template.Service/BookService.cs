@@ -19,7 +19,7 @@ namespace Template.Service
         public BookService(TemplateContext context) : base(context)
         {
         }
-        
+
         public List<Book> GetNewBooks(int day, PageHolder pageHolder)
         {
             var minimumDate = DateTime.Now.Subtract(new TimeSpan(day, 0, 0));

@@ -30,6 +30,11 @@ namespace Template.Data
         {
         }
 
+        public DbSet<Book> Books { get; set; }
+        public DbSet<BookLanguage> BookLanguages { get; set; }
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             AddCustomKeyConversation(builder);
@@ -40,17 +45,11 @@ namespace Template.Data
         private static void AddCustomKeyConversation(ModelBuilder builder)
         {
             foreach (var entityType in builder.Model.GetEntityTypes())
-            {
-                foreach (var property in entityType.ClrType.GetProperties())
-                {
-                    if (property.PropertyType == typeof(MyKey))
-                    {
-                        builder.Entity(entityType.ClrType)
-                            .Property<MyKey>(property.Name)
-                            .HasConversion(MyKey.Converter);
-                    }
-                }
-            }
+            foreach (var property in entityType.ClrType.GetProperties())
+                if (property.PropertyType == typeof(MyKey))
+                    builder.Entity(entityType.ClrType)
+                        .Property<MyKey>(property.Name)
+                        .HasConversion(MyKey.Converter);
         }
 
         private static void AddCreatedDateToAddedEntities(ChangeTracker changeTracker)
@@ -61,9 +60,7 @@ namespace Template.Data
                     continue;
 
                 if (entry.State == EntityState.Added)
-                {
                     entity.CreatedAt = DateTime.UtcNow;
-                }
             }
         }
 
@@ -73,15 +70,10 @@ namespace Template.Data
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
         {
             AddCreatedDateToAddedEntities(ChangeTracker);
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
-
-        public DbSet<Book> Books { get; set; }
-        public DbSet<BookLanguage> BookLanguages { get; set; }
-        public DbSet<Author> Authors { get; set; }
-        public DbSet<RefreshToken> RefreshTokens { get; set; }
     }
 }

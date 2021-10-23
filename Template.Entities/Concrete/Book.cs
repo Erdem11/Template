@@ -13,11 +13,11 @@ namespace Template.Entities.Concrete
         public MyKey AuthorId { get; set; }
         public MyKey AddedUserId { get; set; }
 
-        public bool IsDeleted { get; set; }
-        public DateTime? DeletedAt { get; set; }
-        public List<BookLanguage> Languages { get; set; }
-        
         public virtual Author Author { get; set; }
         public virtual User AddedUser { get; set; }
+        public List<BookLanguage> Languages { get; set; }
+
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
     }
 }
