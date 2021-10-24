@@ -1,5 +1,5 @@
-﻿using Template.Common.Structs;
-using Template.Entities.Types;
+﻿using Template.Common.Models.Types;
+using Template.Common.Structs;
 
 namespace Template.Entities.Abstract
 {

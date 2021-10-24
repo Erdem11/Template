@@ -49,13 +49,7 @@ namespace Template.Data.Migrations
                     b.Property<Guid>("AddedUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AddedUserId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("AuthorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("AuthorId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -72,9 +66,9 @@ namespace Template.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddedUserId1");
+                    b.HasIndex("AddedUserId");
 
-                    b.HasIndex("AuthorId1");
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Books");
                 });
@@ -103,40 +97,7 @@ namespace Template.Data.Migrations
                     b.ToTable("BookLanguages");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.RefreshToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Invalidated")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("JwtId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Token")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Used")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokens");
-                });
-
-            modelBuilder.Entity("Template.Entities.Concrete.Role", b =>
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -166,7 +127,7 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetRoles");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.RoleClaim", b =>
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.RoleClaim", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,7 +152,7 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetRoleClaims");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.User", b =>
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -259,11 +220,12 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.UserClaim", b =>
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserClaim", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -284,7 +246,7 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetUserClaims");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.UserLogin", b =>
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserLogin", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -311,7 +273,7 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetUserLogins");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.UserRole", b =>
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -322,9 +284,6 @@ namespace Template.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
@@ -332,7 +291,7 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.UserToken", b =>
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserToken", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -357,15 +316,49 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Template.Entities.Concrete.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Invalidated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JwtId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Used")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Template.Entities.Concrete.Book", b =>
                 {
-                    b.HasOne("Template.Entities.Concrete.User", "AddedUser")
+                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", "AddedUser")
                         .WithMany()
-                        .HasForeignKey("AddedUserId1");
+                        .HasForeignKey("AddedUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Template.Entities.Concrete.Author", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorId1");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AddedUser");
 
@@ -383,66 +376,66 @@ namespace Template.Data.Migrations
                     b.Navigation("Source");
                 });
 
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.RoleClaim", b =>
+                {
+                    b.HasOne("Template.Entities.Concrete.IdentityModels.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserClaim", b =>
+                {
+                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserLogin", b =>
+                {
+                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserRole", b =>
+                {
+                    b.HasOne("Template.Entities.Concrete.IdentityModels.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserToken", b =>
+                {
+                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Template.Entities.Concrete.RefreshToken", b =>
                 {
-                    b.HasOne("Template.Entities.Concrete.User", "User")
+                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Template.Entities.Concrete.RoleClaim", b =>
-                {
-                    b.HasOne("Template.Entities.Concrete.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Template.Entities.Concrete.UserClaim", b =>
-                {
-                    b.HasOne("Template.Entities.Concrete.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Template.Entities.Concrete.UserLogin", b =>
-                {
-                    b.HasOne("Template.Entities.Concrete.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Template.Entities.Concrete.UserRole", b =>
-                {
-                    b.HasOne("Template.Entities.Concrete.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Template.Entities.Concrete.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Template.Entities.Concrete.UserToken", b =>
-                {
-                    b.HasOne("Template.Entities.Concrete.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Template.Entities.Concrete.Book", b =>

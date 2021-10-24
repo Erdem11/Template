@@ -1,6 +1,6 @@
-﻿using Template.Common.Structs;
+﻿using Template.Common.Models.Types;
+using Template.Common.Structs;
 using Template.Entities.Abstract;
-using Template.Entities.Types;
 
 namespace Template.Entities.Concrete
 {

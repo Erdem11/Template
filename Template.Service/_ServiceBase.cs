@@ -15,7 +15,6 @@ namespace Template.Service
 
     public abstract class ServiceBase<T> : IServiceBase<T> where T : class, IEntityBase
     {
-
         internal readonly TemplateContext Context;
         private DbSet<T> _dbSet;
         protected ServiceBase(TemplateContext context)

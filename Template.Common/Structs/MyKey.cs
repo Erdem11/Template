@@ -28,6 +28,18 @@ namespace Template.Common.Structs
         {
             return val.Id;
         }
+        public static implicit operator MyKey(string val)
+        {
+            return new()
+            {
+                Id = Guid.Parse(val)
+            };
+        }
+
+        public static explicit operator string(MyKey val)
+        {
+            return val.ToString();
+        }
 
         private static ValueConverter<MyKey, Guid> _converter;
 
@@ -47,5 +59,7 @@ namespace Template.Common.Structs
         {
             return Guid.TryParse(s, out var myKey) ? myKey : default(MyKey?);
         }
+        public bool IsDefault() => Id == default;
+        public MyKey GenerateNewId() => Id = Guid.NewGuid();
     }
 }

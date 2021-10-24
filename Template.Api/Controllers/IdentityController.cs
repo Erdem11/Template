@@ -1,14 +1,18 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Template.Common.Models.Identity.Requests;
 using Template.Common.Models.Identity.Responses;
 using Template.Common.Models.ModelBase;
+using Template.Common.Structs;
 using Template.Service;
 
 namespace Template.Api.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class IdentityController : ControllerBase
     {
         private readonly IIdentityService _identityService;
@@ -41,6 +45,29 @@ namespace Template.Api.Controllers
         {
             var result = _identityService.AddUserClaim(userId, claimName);
             return result;
+        }
+
+        [HttpPost]
+        public EmptyResponse AddRole(string role)
+        {
+            _identityService.AddRole(role);
+            
+            return EmptyResponse.Create();
+        }
+        
+        [HttpPost]
+        public EmptyResponse AddUserRole(MyKey id, string role)
+        {
+            _identityService.AddUserRole(id, role);
+            
+            return EmptyResponse.Create();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public EmptyResponse AdminTest()
+        {
+            return EmptyResponse.Create();
         }
     }
 }

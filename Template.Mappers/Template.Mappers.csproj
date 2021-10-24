@@ -6,9 +6,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Template.Common\Template.Common.csproj" />
+      <ProjectReference Include="..\Template.Data\Template.Data.csproj" />
       <ProjectReference Include="..\Template.Entities\Template.Entities.csproj" />
-      <ProjectReference Include="..\Template.Mappers\Template.Mappers.csproj" />
-      <ProjectReference Include="..\Template.Service\Template.Service.csproj" />
     </ItemGroup>
 
 </Project>

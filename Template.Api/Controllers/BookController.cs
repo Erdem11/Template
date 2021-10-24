@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Template.Common;
+using Template.Common.Models.Books.Requests;
+using Template.Common.Models.ModelBase;
 using Template.Common.Structs;
 using Template.Entities.Concrete;
 using Template.Service;
@@ -14,19 +17,24 @@ namespace Template.Api.Controllers
     public class BookController : ControllerBase
     {
         private readonly IBookService _bookService;
-        public BookController(IBookService bookService)
+        private readonly IMapper _mapper;
+        public BookController(IBookService bookService, IMapper mapper)
         {
             _bookService = bookService;
+            _mapper = mapper;
         }
 
-        [Authorize]
         [HttpPost]
-        public object Add(Book book)
+        [AllowAnonymous]
+        // [Authorize(Roles = "Admin,Editor")]
+        public GuidResponse Add(AddBookRequest request)
         {
+            var book = _mapper.Map<Book>(request);
+            
             book.AddedUserId = HttpContext.GetUserId().GetValueOrDefault();
             _bookService.Add(book);
 
-            return book;
+            return default;
         }
 
         [HttpGet]

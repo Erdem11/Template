@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Service", "Templat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Middleware", "Template.Middleware\Template.Middleware.csproj", "{D1F4207E-4108-4460-AEDA-234BE10A40FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Mappers", "Template.Mappers\Template.Mappers.csproj", "{D386F8EC-670D-423E-8B4E-8F9F2A62F227}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{D1F4207E-4108-4460-AEDA-234BE10A40FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1F4207E-4108-4460-AEDA-234BE10A40FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1F4207E-4108-4460-AEDA-234BE10A40FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D386F8EC-670D-423E-8B4E-8F9F2A62F227}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D386F8EC-670D-423E-8B4E-8F9F2A62F227}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D386F8EC-670D-423E-8B4E-8F9F2A62F227}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D386F8EC-670D-423E-8B4E-8F9F2A62F227}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

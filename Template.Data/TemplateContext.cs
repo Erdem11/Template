@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -56,12 +57,27 @@ namespace Template.Data
         {
             foreach (var entry in changeTracker.Entries())
             {
-                if (entry.Entity is not IEntityBase entity)
-                    continue;
-
                 if (entry.State == EntityState.Added)
-                    entity.CreatedAt = DateTime.UtcNow;
+                {
+                    if (entry.Entity is ICreatedAt createdAt)
+                    {
+                        createdAt.CreatedAt = DateTime.UtcNow;
+                    }
+
+                    if (entry.Entity is IMyKey || (entry.Entity?.GetType().BaseType != null && entry.Entity.GetType().BaseType.GenericTypeArguments.Contains(typeof(MyKey))))
+                    {
+                        SetDefaultMyKeyToNewId(entry.Entity);
+                    }
+                }
             }
+        }
+        private static void SetDefaultMyKeyToNewId(object entity)
+        {
+            foreach (var property in entity.GetType().GetProperties())
+                if (property.PropertyType == typeof(MyKey))
+                    if (property.GetValue(entity) is MyKey myKey)
+                        if (myKey.IsDefault())
+                            property.SetValue(entity, myKey.GenerateNewId());
         }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)

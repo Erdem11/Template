@@ -5,9 +5,8 @@ using Template.Entities.Abstract;
 
 namespace Template.Entities.Concrete.IdentityModels
 {
-    public class UserRole : IdentityUserRole<MyKey>, IEntityBase
+    public class UserRole : IdentityUserRole<MyKey>, ICreatedAt
     {
-        public MyKey Id { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

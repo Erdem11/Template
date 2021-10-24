@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Template.Data\Template.Data.csproj" />
+      <ProjectReference Include="..\Template.Mappers\Template.Mappers.csproj" />
       <ProjectReference Include="..\Template.Middleware\Template.Middleware.csproj" />
       <ProjectReference Include="..\Template.Service\Template.Service.csproj" />
     </ItemGroup>

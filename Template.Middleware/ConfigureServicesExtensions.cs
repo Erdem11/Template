@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Template.Common;
 using Template.Data;
+using Template.Entities.Concrete;
 using Template.Entities.Concrete.IdentityModels;
+using Template.Mappers;
 using Template.Service;
 
 namespace Template.Middleware
@@ -28,6 +34,8 @@ namespace Template.Middleware
             services.ConfigureEntityFramework(configuration);
 
             services.ConfigureCustomServiceDependencies();
+
+            services.AddAutoMapper(typeof(RequestToEntityProfile));
         }
 
         private static void ConfigureSwagger(this IServiceCollection services)
@@ -97,6 +105,7 @@ namespace Template.Middleware
         {
             // add MicrosoftIdentity with EntityFramework
             services.AddIdentity<User, Role>()
+                .AddRoles<Role>()
                 .AddEntityFrameworkStores<TemplateContext>();
 
             // add identity service di

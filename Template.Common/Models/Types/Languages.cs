@@ -1,4 +1,4 @@
-﻿namespace Template.Entities.Types
+﻿namespace Template.Common.Models.Types
 {
     public enum Languages
     {

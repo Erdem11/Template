@@ -4,12 +4,17 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Template.Common;
 using Template.Common.Models.Identity.Requests;
 using Template.Common.Models.Identity.Responses;
 using Template.Common.Models.ModelBase;
+using Template.Common.Structs;
 using Template.Data;
 using Template.Entities.Concrete;
 using Template.Entities.Concrete.IdentityModels;
@@ -22,6 +27,8 @@ namespace Template.Service
         EmptyResponse AddUserClaim(Guid userId, string claimName);
         AuthResponse Login(LoginRequest request);
         AuthResponse RefreshToken(RefreshTokenRequest request);
+        EmptyResponse AddUserRole(MyKey userId, string role);
+        EmptyResponse AddRole(string role);
     }
 
     public class IdentityService : IIdentityService
@@ -30,10 +37,12 @@ namespace Template.Service
         private readonly TemplateContext _templateContext;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
 
-        public IdentityService(UserManager<User> userManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, TemplateContext templateContext)
+        public IdentityService(UserManager<User> userManager,RoleManager<Role> roleManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, TemplateContext templateContext)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _jwtSettings = jwtSettings;
             _tokenValidationParameters = tokenValidationParameters;
             _templateContext = templateContext;
@@ -47,12 +56,14 @@ namespace Template.Service
                 UserName = request.Email
             };
 
-            var createdUser = _userManager.CreateAsync(newUser, request.Password).Result;
+            var identityResult = _userManager.CreateAsync(newUser, request.Password).Result;
 
-            if (!createdUser.Succeeded)
+            if (!identityResult.Succeeded)
                 return default;
 
-            return GenerateAuthenticationResultForUser(newUser);
+            var user = _userManager.FindByEmailAsync(request.Email).Result;
+            
+            return GenerateAuthenticationResultForUser(user);
         }
 
         public AuthResponse Login(LoginRequest request)
@@ -70,6 +81,25 @@ namespace Template.Service
             return GenerateAuthenticationResultForUser(user);
         }
 
+        public EmptyResponse AddRole(string role)
+        {
+            _roleManager.CreateAsync(new Role
+            {
+                Name = role
+            }).Wait();
+            
+            return EmptyResponse.Create();
+        }
+
+        public EmptyResponse AddUserRole(MyKey userId, string role)
+        {
+            var user = _templateContext.Users.Find(userId);
+
+            _userManager.AddToRoleAsync(user, role).Wait();
+
+            return EmptyResponse.Create();
+        }
+        
         public EmptyResponse AddUserClaim(Guid userId, string claimName)
         {
             var user = _userManager.FindByIdAsync(userId.ToString()).Result;
@@ -164,6 +194,9 @@ namespace Template.Service
             var userClaims = _userManager.GetClaimsAsync(user).Result;
             claims.AddRange(userClaims);
 
+            var userRoles = _userManager.GetRolesAsync(user).Result;
+            claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -202,7 +235,7 @@ namespace Template.Service
                 var principal = tokenHandler.ValidateToken(token, _tokenValidationParameters, out var validatedToken);
                 if (!IsJwtWithValidSecurityAlgorithm(validatedToken))
                     return null;
-
+                    
                 return principal;
             }
             catch
