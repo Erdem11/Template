@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Template.Common.Models.Types;
 using Template.Common.Structs;
-using Template.Entities.Abstract;
+using Template.Common.Types;
+using Template.Domain.Dto.Abstract;
 
 namespace Template.Service.Helpers
 {

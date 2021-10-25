@@ -2,11 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <LangVersion>9</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Template.Common\Template.Common.csproj" />
+      <ProjectReference Include="..\Template.Contracts\Template.Contracts.csproj" />
       <ProjectReference Include="..\Template.Data\Template.Data.csproj" />
+      <ProjectReference Include="..\Template.Domain\Template.Domain.csproj" />
       <ProjectReference Include="..\Template.Entities\Template.Entities.csproj" />
     </ItemGroup>
 

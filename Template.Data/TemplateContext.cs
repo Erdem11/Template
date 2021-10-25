@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Template.Common.Structs;
-using Template.Entities.Abstract;
-using Template.Entities.Concrete;
-using Template.Entities.Concrete.IdentityModels;
+using Template.Domain.Dto;
+using Template.Domain.Dto.Abstract;
+using Template.Domain.Dto.IdentityModels;
 
 namespace Template.Data
 {
@@ -43,6 +45,18 @@ namespace Template.Data
             base.OnModelCreating(builder);
         }
 
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            DoOperationsForChangeEntities(ChangeTracker);
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
+        {
+            DoOperationsForChangeEntities(ChangeTracker);
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
         private static void AddCustomKeyConversation(ModelBuilder builder)
         {
             foreach (var entityType in builder.Model.GetEntityTypes())
@@ -53,43 +67,55 @@ namespace Template.Data
                         .HasConversion(MyKey.Converter);
         }
 
-        private static void AddCreatedDateToAddedEntities(ChangeTracker changeTracker)
+        private static void DoOperationsForEveryProperty(object entity)
+        {
+            foreach (var property in entity.GetType().GetProperties())
+                if (property.PropertyType == typeof(MyKey))
+                    if (property.GetValue(entity) is MyKey myKey)
+                    {
+                        if (property.Name == "SourceId")
+                        {
+                            var source = property.GetValue("Source");
+                            var sourceId = source.GetType().GetProperty("Id").GetValue(source);
+                            property.SetValue(entity, sourceId);
+                            continue;
+                        }
+                        SetNewIdToMyKey(entity, myKey, property);
+                    }
+        }
+
+        private static void SetNewIdToMyKey(object entity, MyKey myKey, PropertyInfo property)
+        {
+            if (!myKey.IsDefault())
+                return;
+
+            var newId = myKey.GenerateNewId();
+            property.SetValue(entity, newId);
+        }
+
+        private static void DoOperationsForChangeEntities(ChangeTracker changeTracker)
         {
             foreach (var entry in changeTracker.Entries())
             {
                 if (entry.State == EntityState.Added)
                 {
-                    if (entry.Entity is ICreatedAt createdAt)
-                    {
-                        createdAt.CreatedAt = DateTime.UtcNow;
-                    }
-
-                    if (entry.Entity is IMyKey || (entry.Entity?.GetType().BaseType != null && entry.Entity.GetType().BaseType.GenericTypeArguments.Contains(typeof(MyKey))))
-                    {
-                        SetDefaultMyKeyToNewId(entry.Entity);
-                    }
+                    DoOperationsForAddedEntities(entry);
                 }
             }
         }
-        private static void SetDefaultMyKeyToNewId(object entity)
-        {
-            foreach (var property in entity.GetType().GetProperties())
-                if (property.PropertyType == typeof(MyKey))
-                    if (property.GetValue(entity) is MyKey myKey)
-                        if (myKey.IsDefault())
-                            property.SetValue(entity, myKey.GenerateNewId());
-        }
 
-        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        private static void DoOperationsForAddedEntities(EntityEntry entry)
         {
-            AddCreatedDateToAddedEntities(ChangeTracker);
-            return base.SaveChanges(acceptAllChangesOnSuccess);
-        }
+            if (entry.Entity is ICreatedAt createdAt)
+            {
+                createdAt.CreatedAt = DateTime.UtcNow;
+            }
 
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
-        {
-            AddCreatedDateToAddedEntities(ChangeTracker);
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            var memberInfo = entry.Entity.GetType().BaseType;
+            if (entry.Entity is IMyKey || (memberInfo != null && memberInfo.GenericTypeArguments.Contains(typeof(MyKey))))
+            {
+                DoOperationsForEveryProperty(entry.Entity);
+            }
         }
     }
 }

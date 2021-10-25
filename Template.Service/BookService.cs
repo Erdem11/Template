@@ -4,14 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using Template.Common.Structs;
 using Template.Data;
-using Template.Entities.Concrete;
+using Template.Domain.Dto;
 using Template.Service.Helpers;
 
 namespace Template.Service
 {
     public interface IBookService : IServiceBase<Book>
     {
-        List<Book> GetNewBooks(int day, PageHolder pager);
+        List<Book> GetNewBooks(int day, PaginationFilter pager);
     }
 
     public class BookService : ServiceBase<Book>, IBookService
@@ -20,7 +20,7 @@ namespace Template.Service
         {
         }
 
-        public List<Book> GetNewBooks(int day, PageHolder pageHolder)
+        public List<Book> GetNewBooks(int day, PaginationFilter pageHolder)
         {
             var minimumDate = DateTime.Now.Subtract(new TimeSpan(day, 0, 0));
 

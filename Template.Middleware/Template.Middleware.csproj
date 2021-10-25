@@ -2,13 +2,39 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <LangVersion>9</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Template.Common\Template.Common.csproj" />
+      <ProjectReference Include="..\Template.Domain\Template.Domain.csproj" />
       <ProjectReference Include="..\Template.Entities\Template.Entities.csproj" />
       <ProjectReference Include="..\Template.Mappers\Template.Mappers.csproj" />
       <ProjectReference Include="..\Template.Service\Template.Service.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="ConfigureSwaggerServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureJwtAuthServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureAutoMapperServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureCustomAuthorizationServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureCustomServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureEntityFrameworkServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureMicrosoftIdentityServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

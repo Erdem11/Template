@@ -4,32 +4,28 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Template.Common;
-using Template.Common.Models.Identity.Requests;
-using Template.Common.Models.Identity.Responses;
-using Template.Common.Models.ModelBase;
 using Template.Common.Structs;
 using Template.Data;
-using Template.Entities.Concrete;
-using Template.Entities.Concrete.IdentityModels;
+using Template.Domain.Dto;
+using Template.Domain.Dto.IdentityModels;
+using Template.Domain.Identity;
 
 namespace Template.Service
 {
     public interface IIdentityService
     {
-        AuthResponse Register(RegisterRequest request);
-        EmptyResponse AddUserClaim(Guid userId, string claimName);
-        AuthResponse Login(LoginRequest request);
-        AuthResponse RefreshToken(RefreshTokenRequest request);
-        EmptyResponse AddUserRole(MyKey userId, string role);
-        EmptyResponse AddRole(string role);
+        AuthResult Register(string email, string password);
+        void AddUserClaim(MyKey userId, string claimName);
+        AuthResult Login(string email, string password);
+        AuthResult RefreshToken(string token, Guid refreshToken);
+        void AddUserRole(MyKey userId, string role);
+        void AddRole(string role);
     }
+
+
 
     public class IdentityService : IIdentityService
     {
@@ -39,7 +35,7 @@ namespace Template.Service
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
 
-        public IdentityService(UserManager<User> userManager,RoleManager<Role> roleManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, TemplateContext templateContext)
+        public IdentityService(UserManager<User> userManager, RoleManager<Role> roleManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, TemplateContext templateContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -48,71 +44,71 @@ namespace Template.Service
             _templateContext = templateContext;
         }
 
-        public AuthResponse Register(RegisterRequest request)
+        public AuthResult Register(string email, string password)
         {
             var newUser = new User
             {
-                Email = request.Email,
-                UserName = request.Email
+                Email = email,
+                UserName = email
             };
 
-            var identityResult = _userManager.CreateAsync(newUser, request.Password).Result;
+            var identityResult = _userManager.CreateAsync(newUser, password).Result;
 
             if (!identityResult.Succeeded)
                 return default;
 
-            var user = _userManager.FindByEmailAsync(request.Email).Result;
-            
+            var user = _userManager.FindByEmailAsync(email).Result;
+
             return GenerateAuthenticationResultForUser(user);
         }
 
-        public AuthResponse Login(LoginRequest request)
+        public AuthResult Login(string email, string password)
         {
-            var user = _userManager.FindByEmailAsync(request.Email).Result;
+            var user = _userManager.FindByEmailAsync(email).Result;
 
             if (user == default)
-                return ResponseBase.ErrorResponse<AuthResponse>("User does not exist");
+                return new AuthResult
+                {
+                    Error = "User does not exist"
+                };
 
-            var isPasswordValid = _userManager.CheckPasswordAsync(user, request.Password).Result;
+            var isPasswordValid = _userManager.CheckPasswordAsync(user, password).Result;
 
             if (!isPasswordValid)
-                return ResponseBase.ErrorResponse<AuthResponse>("User/password combination is wrong");
+                return new AuthResult
+                {
+                    Error = "User/password combination is wrong"
+                };
 
             return GenerateAuthenticationResultForUser(user);
         }
 
-        public EmptyResponse AddRole(string role)
+        public void AddRole(string role)
         {
             _roleManager.CreateAsync(new Role
             {
                 Name = role
-            }).Wait();
-            
-            return EmptyResponse.Create();
+            }).Wait(); 
         }
 
-        public EmptyResponse AddUserRole(MyKey userId, string role)
+        public void AddUserRole(MyKey userId, string role)
         {
             var user = _templateContext.Users.Find(userId);
 
-            _userManager.AddToRoleAsync(user, role).Wait();
-
-            return EmptyResponse.Create();
+            _userManager.AddToRoleAsync(user, role).Wait(); 
         }
-        
-        public EmptyResponse AddUserClaim(Guid userId, string claimName)
+
+        public void AddUserClaim(MyKey userId, string claimName)
         {
             var user = _userManager.FindByIdAsync(userId.ToString()).Result;
             _userManager.AddClaimAsync(user, new Claim(claimName, "true")).Wait();
-            _templateContext.SaveChanges();
-
-            return EmptyResponse.Create();
+            _templateContext.SaveChanges(); 
         }
 
-        public AuthResponse RefreshToken(RefreshTokenRequest request)
+        public AuthResult RefreshToken(string token, Guid refreshToken)
         {
-            var response = new AuthResponse();
-            var validatedToken = GetPrincipalFromToken(request.Token);
+            var response = new AuthResult();
+            var validatedToken = GetPrincipalFromToken(token);
 
             if (validatedToken == null)
                 // invalid token
@@ -131,7 +127,7 @@ namespace Template.Service
 
             var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value;
 
-            var storedRefreshToken = _templateContext.RefreshTokens.SingleOrDefault(x => x.Id == request.RefreshToken);
+            var storedRefreshToken = _templateContext.RefreshTokens.SingleOrDefault(x => x.Id == refreshToken);
 
             if (storedRefreshToken == default)
             {
@@ -177,7 +173,7 @@ namespace Template.Service
             return GenerateAuthenticationResultForUser(user);
         }
 
-        private AuthResponse GenerateAuthenticationResultForUser(User user)
+        private AuthResult GenerateAuthenticationResultForUser(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
@@ -218,7 +214,7 @@ namespace Template.Service
 
             var tokenString = tokenHandler.WriteToken(token);
 
-            return new AuthResponse
+            return new AuthResult
             {
                 Token = tokenString,
                 TokenExpireDate = tokenDescriptor.Expires.GetValueOrDefault(),
@@ -235,7 +231,7 @@ namespace Template.Service
                 var principal = tokenHandler.ValidateToken(token, _tokenValidationParameters, out var validatedToken);
                 if (!IsJwtWithValidSecurityAlgorithm(validatedToken))
                     return null;
-                    
+
                 return principal;
             }
             catch
