@@ -39,7 +39,7 @@ namespace Template.Api
                 configurationBuilder.SetBasePath(env.ContentRootPath);
                 var configurationNameList = new[]
                 {
-                    "jwt", "logging", "mssql", "caching", "caching.redis", "caching.inmemory",
+                    "jwt", "logging", "mssql", "caching", "caching.redis", "caching.inmemory", "subscriber"
                 };
 
                 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");

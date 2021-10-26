@@ -17,6 +17,7 @@ namespace Template.Middleware
             ConfigureAutoMapperServicesExtensions.Configure(services, configuration);
             ConfigureCacheServicesExtensions.Configure(services, configuration);
             ConfigureApiVersioningServicesExtensions.Configure(services, configuration);
+            ConfigureBackgroundTasksServicesExtensions.Configure(services, configuration);
         }
     }
 }

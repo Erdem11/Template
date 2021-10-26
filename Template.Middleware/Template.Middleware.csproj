@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Template.BackgroundTasks\Template.BackgroundTasks.csproj" />
       <ProjectReference Include="..\Template.Caching\Template.Caching.csproj" />
       <ProjectReference Include="..\Template.Common\Template.Common.csproj" />
       <ProjectReference Include="..\Template.Domain\Template.Domain.csproj" />
@@ -40,6 +41,9 @@
         <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
       </Compile>
       <Compile Update="ConfigureApiVersioningServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureBackgroundTasksServicesExtensions.cs">
         <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
       </Compile>
     </ItemGroup>

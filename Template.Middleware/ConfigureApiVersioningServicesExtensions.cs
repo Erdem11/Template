@@ -19,4 +19,5 @@ namespace Template.Middleware
             services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
         }
     }
+
 }
