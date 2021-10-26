@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Template.Caching\Template.Caching.csproj" />
       <ProjectReference Include="..\Template.Common\Template.Common.csproj" />
       <ProjectReference Include="..\Template.Domain\Template.Domain.csproj" />
       <ProjectReference Include="..\Template.Entities\Template.Entities.csproj" />
@@ -33,6 +34,12 @@
         <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
       </Compile>
       <Compile Update="ConfigureMicrosoftIdentityServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureCacheServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureApiVersioningServicesExtensions.cs">
         <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
       </Compile>
     </ItemGroup>

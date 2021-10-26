@@ -14,27 +14,6 @@ using Template.Middleware;
 
 namespace Template.Api
 {
-    public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
-    {
-        private readonly IApiVersionDescriptionProvider _provider;
-
-        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) => _provider = provider;
-
-        public void Configure(SwaggerGenOptions options)
-        {
-            foreach (var description in _provider.ApiVersionDescriptions.OrderByDescending(x=>x.ApiVersion))
-            {
-                options.SwaggerDoc(
-                description.GroupName,
-                new OpenApiInfo()
-                {
-                    Title = $"Template API {description.ApiVersion}",
-                    Version = description.ApiVersion.ToString(),
-                });
-            }
-        }
-    }
-
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -49,16 +28,6 @@ namespace Template.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureServices(Configuration);
-
-            services.AddApiVersioning(x => {
-                x.DefaultApiVersion = new ApiVersion(1, 1);
-                x.ReportApiVersions = true;
-                x.ApiVersionReader = new HeaderApiVersionReader("X-Version");
-                // x.ApiVersionReader = new MediaTypeApiVersionReader("X-Version");
-                x.AssumeDefaultVersionWhenUnspecified = true;
-            });
-            services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
-            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

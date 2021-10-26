@@ -9,6 +9,7 @@ namespace Template.Middleware
         public static void Configure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAutoMapper(typeof(RequestToDomainProfile));
+            services.AddAutoMapper(typeof(DomainToResponseProfile));
         }
     }
 }

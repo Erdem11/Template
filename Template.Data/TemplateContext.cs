@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -37,6 +36,8 @@ namespace Template.Data
         public DbSet<BookLanguage> BookLanguages { get; set; }
         public DbSet<Author> Authors { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<TagLanguage> TagLanguages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

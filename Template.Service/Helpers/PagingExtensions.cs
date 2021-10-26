@@ -64,7 +64,7 @@ namespace Template.Service.Helpers
             return entities;
         }
 
-        private static IQueryable<T> GetPagedQuery<T>(this IQueryable<T> queryable, PaginationFilter paginationFilter)
+        public static IQueryable<T> GetPagedQuery<T>(this IQueryable<T> queryable, PaginationFilter paginationFilter)
         {
             return queryable.Skip(paginationFilter.PageSize * paginationFilter.PageNo).Take(paginationFilter.PageSize);
         }

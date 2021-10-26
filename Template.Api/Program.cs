@@ -1,4 +1,6 @@
+using System;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Template.Api
@@ -19,12 +21,36 @@ namespace Template.Api
             host.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
+        private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.UseStartup<Startup>();
+                    
+                    LoadAppsettingsFiles(webBuilder);
                 });
+        }
+
+        private static void LoadAppsettingsFiles(IWebHostBuilder webBuilder)
+        {
+            webBuilder.ConfigureAppConfiguration((webHostBuilderContext,
+                configurationBuilder) => {
+                var env = webHostBuilderContext.HostingEnvironment;
+                configurationBuilder.SetBasePath(env.ContentRootPath);
+                var configurationNameList = new[]
+                {
+                    "jwt", "logging", "mssql", "redis",
+                };
+
+                var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                environment = environment == null ? null : environment + ".";
+
+                foreach (var s in configurationNameList)
+                {
+                    configurationBuilder.AddJsonFile($"appsettings.{environment + s}.json", false, true);
+                }
+                configurationBuilder.AddEnvironmentVariables();
+            });
         }
     }
 }

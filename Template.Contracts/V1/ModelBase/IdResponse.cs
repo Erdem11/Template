@@ -1,26 +1,35 @@
-﻿
-using System;
+﻿using System;
 
 namespace Template.Contracts.V1.ModelBase
 {
     public class IdResponse
     {
         public Guid Id { get; set; }
+        public IdResponse()
+        {
 
-        public static IdResponse Create(Guid key)
+        }
+        
+        public IdResponse(Guid id)
+        {
+            Id = id;
+
+        }
+
+        public static IdResponse Create(Guid id)
         {
             return new IdResponse
             {
-                Id = key
+                Id = id
             };
         }
-        public static implicit operator IdResponse(Guid key)
+        
+        public static implicit operator IdResponse(Guid id)
         {
             return new IdResponse
             {
-                Id = key
+                Id = id
             };
         }
     }
-
 }

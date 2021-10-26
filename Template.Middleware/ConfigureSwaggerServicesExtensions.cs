@@ -1,8 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Template.Middleware
 {
@@ -11,11 +15,6 @@ namespace Template.Middleware
         public static void Configure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSwaggerGen(c => {
-                // c.SwaggerDoc("v1", new OpenApiInfo
-                // {
-                //     Title = "Template.Api",
-                //     Version = "v1"
-                // });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -48,6 +47,33 @@ namespace Template.Middleware
                 var commonXmlPath = Path.Combine(AppContext.BaseDirectory, commonXmlFile);
                 c.IncludeXmlComments(commonXmlPath);
             });
+
+            // Configure swagger for multiple descriptions i.e api versioning
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        }
+    }
+
+    /// <summary>
+    /// Configure swagger for multiple descriptions i.e api versioning
+    /// </summary>
+    public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
+    {
+        private readonly IApiVersionDescriptionProvider _provider;
+
+        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) => _provider = provider;
+
+        public void Configure(SwaggerGenOptions options)
+        {
+            foreach (var description in _provider.ApiVersionDescriptions.OrderByDescending(x => x.ApiVersion))
+            {
+                options.SwaggerDoc(
+                description.GroupName,
+                new OpenApiInfo()
+                {
+                    Title = $"Template API {description.ApiVersion}",
+                    Version = description.ApiVersion.ToString(),
+                });
+            }
         }
     }
 }

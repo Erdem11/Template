@@ -10,7 +10,7 @@ namespace Template.Api.Controllers.V1._1
     [ApiController]
     [Route("[controller]/[action]")]
     [ApiVersion( "1.1" )]
-    public class IdentityController : ControllerBase
+    public class IdentityController : TemplateControllerBase
     {
         private readonly IIdentityService _identityService;
 

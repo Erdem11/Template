@@ -49,4 +49,18 @@
             Code = code;
         }
     }
+
+    public class OkResponse
+    {
+        public string Status { get; set; }
+        public OkResponse()
+        {
+            
+        }
+        
+        public OkResponse(bool isSuccess)
+        {
+            Status = isSuccess ? "Success" : "Error";
+        }
+    }
 }

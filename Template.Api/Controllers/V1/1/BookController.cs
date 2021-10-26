@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Template.Common;
@@ -16,8 +17,9 @@ namespace Template.Api.Controllers.V1._1
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
     [ApiVersion("1.1")]
+    // [ApiVersion("1.2")]
     [Route("[controller]/[action]")]
-    public class BookController : ControllerBase
+    public class BookController : TemplateControllerBase
     {
         private readonly IBookService _bookService;
         private readonly IMapper _mapper;
@@ -27,27 +29,27 @@ namespace Template.Api.Controllers.V1._1
             _mapper = mapper;
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(Response<GuidResponse>), 201)]
-        [ProducesResponseType(typeof(ErrorResponse), 400)]
-        [ApiVersion( "1.1" )]
-        public IActionResult Add(AddBookRequest request)
-        {
-            var book = _mapper.Map<Book>(request);
-
-            book.AddedUserId = HttpContext.GetUserId().GetValueOrDefault();
-            _bookService.Add(book);
-
-            return Created(book.Id.ToString(), book.Id);
-        }
+        // [HttpPost]
+        // [AllowAnonymous]
+        // [ProducesResponseType(typeof(Response<GuidResponse>), 201)]
+        // [ProducesResponseType(typeof(ErrorResponse), 400)]
+        // [ApiVersion( "1.1" )]
+        // public IActionResult Add(AddBookRequest request)
+        // {
+        //     var book = _mapper.Map<Book>(request);
+        //
+        //     book.AddedUserId = HttpContext.GetUserId().GetValueOrDefault();
+        //     _bookService.Add(book);
+        //
+        //     return Created(book.Id.ToString(), book.Id);
+        // }
 
         // [HttpGet("/Book/GetAll")]
         [HttpGet]
         // [Authorize(Policy = RoleConstants.Admin)]
         [ProducesResponseType(typeof(Response<BookResponse>), 201)]
         [ProducesResponseType(typeof(ErrorResponse), 400)]
-        [ApiVersion( "1.1" )]
+        [MapToApiVersion("1.1")]
         public IActionResult GetAll([FromQuery] PaginationQuery query)
         {
             // var paginationFilter = _mapper.Map<PaginationFilter>(query);
@@ -63,10 +65,19 @@ namespace Template.Api.Controllers.V1._1
             return Ok(books);
         }
 
-        [HttpGet]
-        public IActionResult GetV()
-        {
-            return Ok("1.1");
-        }
+        // [HttpGet]
+        // public IActionResult GetV()
+        // {
+        //     return Ok("1.1");
+        // }
+
+
+        // [Obsolete]
+        // [HttpGet]
+        // [MapToApiVersion("1.1")]
+        // public IActionResult GetV()
+        // {
+        //     return Ok("1.1");
+        // }
     }
 }

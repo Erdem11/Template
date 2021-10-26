@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Template.Common;
 
 namespace Template.Middleware
 {
@@ -25,6 +15,8 @@ namespace Template.Middleware
             ConfigureEntityFrameworkServicesExtensions.Configure(services, configuration);
             ConfigureCustomServicesExtensions.Configure(services, configuration);
             ConfigureAutoMapperServicesExtensions.Configure(services, configuration);
+            ConfigureCacheServicesExtensions.Configure(services, configuration);
+            ConfigureApiVersioningServicesExtensions.Configure(services, configuration);
         }
     }
 }

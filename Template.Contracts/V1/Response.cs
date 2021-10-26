@@ -1,6 +1,6 @@
 ﻿namespace Template.Contracts.V1
 {
-    public class Response<T>
+    public class Response<T> //: Response
     {
         public T Data { get; set; }
         public Response() {}
@@ -11,4 +11,8 @@
         }
     }
 
+    public class StringResponse
+    {
+        public string Data { get; set; }
+    }
 }

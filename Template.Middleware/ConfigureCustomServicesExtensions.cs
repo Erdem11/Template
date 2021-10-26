@@ -10,6 +10,7 @@ namespace Template.Middleware
         {
             // add custom services
             services.AddScoped<IBookService, BookService>();
+            services.AddScoped<ITagService, TagService>();
         }
     }
 }

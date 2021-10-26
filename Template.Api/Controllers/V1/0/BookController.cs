@@ -1,6 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.ComponentModel;
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Template.Caching.RedisCaching;
 using Template.Common;
 using Template.Common.Structs;
 using Template.Contracts.V1;
@@ -14,11 +18,11 @@ namespace Template.Api.Controllers.V1._0
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
-    [ApiVersion( "1.0" )]
-    [ApiVersion( "1.1" )]
-    public class BookController : ControllerBase
+    [ApiVersion("1.0")]
+    [ApiVersion("1.1")]
+    public class BookController : TemplateControllerBase
     {
         private readonly IBookService _bookService;
         private readonly IMapper _mapper;
@@ -29,10 +33,12 @@ namespace Template.Api.Controllers.V1._0
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Roles =
+            RoleConstants.Admin + "," +
+            RoleConstants.Editor)]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(typeof(Response<GuidResponse>), 201)]
         [ProducesResponseType(typeof(ErrorResponse), 400)]
-        [MapToApiVersion("1.0")]
         public IActionResult Add(AddBookRequest request)
         {
             var book = _mapper.Map<Book>(request);
@@ -44,32 +50,17 @@ namespace Template.Api.Controllers.V1._0
         }
 
         [HttpGet]
-        // [Authorize(Policy = RoleConstants.Admin)]
+        [RedisCached(60)]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(typeof(Response<BookResponse>), 201)]
         [ProducesResponseType(typeof(ErrorResponse), 400)]
-        [MapToApiVersion("1.0")]
         public IActionResult GetAll([FromQuery] PaginationQuery query)
         {
-            // var paginationFilter = _mapper.Map<PaginationFilter>(query);
-            
-            var books = _bookService.GetNewBooks(10, new PaginationFilter{PageNo = 0,PageSize = 100});
-            
+            var paginationFilter = _mapper.Map<PaginationFilter>(query);
+
+            var books = _bookService.GetNewBooks(10, paginationFilter);
+
             return Ok(books);
-        }
-        
-        [HttpGet]
-        [MapToApiVersion("1.0")]
-        public IActionResult GetV()
-        {
-            return Ok("1");
-        }
-        
-        
-        [HttpGet]
-        [MapToApiVersion("1.0")]
-        public IActionResult Only1()
-        {
-            return Ok("1");
         }
     }
 }

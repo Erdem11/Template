@@ -25,4 +25,31 @@
       <ProjectReference Include="..\Template.Service\Template.Service.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="appsettings.jwt.json">
+        <DependentUpon>appsettings.json</DependentUpon>
+      </Content>
+      <Content Update="appsettings.logging.json">
+        <DependentUpon>appsettings.json</DependentUpon>
+      </Content>
+      <Content Update="appsettings.mssql.json">
+        <DependentUpon>appsettings.json</DependentUpon>
+      </Content>
+      <Content Update="appsettings.redis.json">
+        <DependentUpon>appsettings.json</DependentUpon>
+      </Content>
+      <Content Update="appsettings.Development.jwt.json">
+        <DependentUpon>appsettings.Development.json</DependentUpon>
+      </Content>
+      <Content Update="appsettings.Development.redis.json">
+        <DependentUpon>appsettings.Development.json</DependentUpon>
+      </Content>
+      <Content Update="appsettings.Development.mssql.json">
+        <DependentUpon>appsettings.Development.json</DependentUpon>
+      </Content>
+      <Content Update="appsettings.Development.logging.json">
+        <DependentUpon>appsettings.Development.json</DependentUpon>
+      </Content>
+    </ItemGroup>
+
 </Project>
