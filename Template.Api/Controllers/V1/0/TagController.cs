@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Template.Caching;
 using Template.Caching.RedisCaching;
 using Template.Common;
 using Template.Common.Structs;
@@ -48,7 +49,7 @@ namespace Template.Api.Controllers.V1._0
 
 
         [HttpGet]
-        [RedisCached(60)]
+        [Cached(60)]
         // [Authorize(Roles =
         //     RoleConstants.Admin + "," +
         //     RoleConstants.Editor)]

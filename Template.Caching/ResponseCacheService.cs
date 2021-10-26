@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using StackExchange.Redis;
 
-namespace Template.Caching.RedisCaching
+namespace Template.Caching
 {
     public interface IResponseCacheService
     {
@@ -19,6 +17,7 @@ namespace Template.Caching.RedisCaching
         {
             _cacheService = cacheService;
         }
+        
         public async Task CacheResponseAsync(string cacheKey, object response, TimeSpan timeToLive)
         {
             if (response == null)
@@ -29,6 +28,7 @@ namespace Template.Caching.RedisCaching
             var serializedResponse = JsonConvert.SerializeObject(response);
             await _cacheService.SetCacheValueAsync(cacheKey, serializedResponse, timeToLive);
         }
+        
         public async Task<string> GetCachedResponseAsync(string cacheKey)
         {
             var cachedResponse = await _cacheService.GetCacheValueAsync(cacheKey);

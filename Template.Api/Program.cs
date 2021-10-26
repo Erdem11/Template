@@ -26,7 +26,7 @@ namespace Template.Api
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.UseStartup<Startup>();
-                    
+
                     LoadAppsettingsFiles(webBuilder);
                 });
         }
@@ -39,7 +39,7 @@ namespace Template.Api
                 configurationBuilder.SetBasePath(env.ContentRootPath);
                 var configurationNameList = new[]
                 {
-                    "jwt", "logging", "mssql", "redis",
+                    "jwt", "logging", "mssql", "caching", "caching.redis", "caching.inmemory",
                 };
 
                 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");

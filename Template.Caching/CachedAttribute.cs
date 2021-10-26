@@ -6,28 +6,30 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using Template.Caching.RedisCaching;
 
-namespace Template.Caching.RedisCaching
+namespace Template.Caching
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class RedisCachedAttribute : Attribute, IAsyncActionFilter
+    public class CachedAttribute : Attribute, IAsyncActionFilter
     {
         private readonly int _timeToLiveSeconds;
-        public RedisCachedAttribute()
+        public CachedAttribute()
         {
             
         }
-        public RedisCachedAttribute(int timeToLiveSeconds)
+        
+        public CachedAttribute(int timeToLiveSeconds)
         {
             _timeToLiveSeconds = timeToLiveSeconds;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var cacheSettings = context.HttpContext.RequestServices.GetRequiredService<RedisCacheSettings>();
+            var cacheSettings = context.HttpContext.RequestServices.GetRequiredService<CacheSettings>();
 
             if (!cacheSettings.Enabled)
-            {   
+            {
                 await next();
                 return;
             }

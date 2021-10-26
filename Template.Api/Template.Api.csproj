@@ -50,6 +50,15 @@
       <Content Update="appsettings.Development.logging.json">
         <DependentUpon>appsettings.Development.json</DependentUpon>
       </Content>
+      <Content Update="appsettings.Development.caching.json">
+        <DependentUpon>appsettings.Development.json</DependentUpon>
+      </Content>
+      <Content Update="appsettings.Development.caching.redis.json">
+        <DependentUpon>appsettings.Development.caching.json</DependentUpon>
+      </Content>
+      <Content Update="appsettings.Development.caching.inmemory.json">
+        <DependentUpon>appsettings.Development.caching.json</DependentUpon>
+      </Content>
     </ItemGroup>
 
 </Project>
