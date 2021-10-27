@@ -1,15 +1,11 @@
-using System.Linq;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Template.Caching.RedisCaching;
 using Template.Middleware;
 
 namespace Template.Api
@@ -28,6 +24,11 @@ namespace Template.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureServices(Configuration);
+
+            var redisCacheSettings = new RedisCacheSettings();
+            Configuration.GetSection(nameof(RedisCacheSettings)).Bind(redisCacheSettings);
+            services.AddHangfire(x => x.UseRedisStorage(redisCacheSettings.ConnectionString));
+            services.AddHangfireServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +59,8 @@ namespace Template.Api
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
+            
+            app.UseHangfireDashboard();
         }
     }
 }
