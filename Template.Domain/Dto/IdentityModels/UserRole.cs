@@ -8,5 +8,7 @@ namespace Template.Domain.Dto.IdentityModels
     public class UserRole : IdentityUserRole<MyKey>, ICreatedAt
     {
         public DateTime CreatedAt { get; set; }
+        public virtual User User { get; set; }
+        public virtual Role Role { get; set; }
     }
 }

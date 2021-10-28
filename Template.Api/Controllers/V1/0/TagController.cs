@@ -47,7 +47,6 @@ namespace Template.Api.Controllers.V1._0
             return Created(tag.Id.ToString(), new IdResponse(tag.Id.ToPrimitive()));
         }
 
-
         [HttpGet]
         [Cached(60)]
         // [Authorize(Roles =

@@ -2,6 +2,7 @@
 using Hangfire;
 using Hangfire.Dashboard;
 using Microsoft.Extensions.DependencyInjection;
+using Template.Common;
 using Template.Common.SettingsConfigurationFiles;
 using Template.Service;
 
@@ -37,14 +38,12 @@ namespace Template.Middleware
             var httpContext = context.GetHttpContext();
 
             var token = httpContext.Request.Headers["Authorization"].FirstOrDefault(x => x.ToLower().Contains("bearer "));
-
             token = token?.Replace("Bearer ", "");
 
             var principalsToken = _identityService.GetPrincipalFromToken(token);
 
-            var canSeeHangfire = principalsToken?.Claims.Any(x => x.Value == "Hangfire");
-
-            return canSeeHangfire.GetValueOrDefault();
+            var canSeeHangfireValue = principalsToken?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.Hangfire)?.Value;
+            return bool.TryParse(canSeeHangfireValue, out var canSeeHangfire) && canSeeHangfire;
         }
     }
 }

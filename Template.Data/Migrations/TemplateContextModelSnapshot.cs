@@ -129,9 +129,10 @@ namespace Template.Data.Migrations
 
             modelBuilder.Entity("Template.Domain.Dto.IdentityModels.RoleClaim", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -284,9 +285,19 @@ namespace Template.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("RoleId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("RoleId1");
+
+                    b.HasIndex("UserId1");
 
                     b.ToTable("AspNetUserRoles");
                 });
@@ -453,11 +464,23 @@ namespace Template.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Template.Domain.Dto.IdentityModels.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId1");
+
                     b.HasOne("Template.Domain.Dto.IdentityModels.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Template.Domain.Dto.IdentityModels.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Template.Domain.Dto.IdentityModels.UserToken", b =>

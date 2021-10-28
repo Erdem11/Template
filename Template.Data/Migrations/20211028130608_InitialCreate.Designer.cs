@@ -10,8 +10,8 @@ using Template.Data;
 namespace Template.Data.Migrations
 {
     [DbContext(typeof(TemplateContext))]
-    [Migration("20211023202751_MyKey")]
-    partial class MyKey
+    [Migration("20211028130608_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace Template.Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Template.Entities.Concrete.Author", b =>
+            modelBuilder.Entity("Template.Domain.Dto.Author", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -43,7 +43,7 @@ namespace Template.Data.Migrations
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.Book", b =>
+            modelBuilder.Entity("Template.Domain.Dto.Book", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -75,7 +75,7 @@ namespace Template.Data.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.BookLanguage", b =>
+            modelBuilder.Entity("Template.Domain.Dto.BookLanguage", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -99,7 +99,7 @@ namespace Template.Data.Migrations
                     b.ToTable("BookLanguages");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.Role", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -129,11 +129,12 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetRoles");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.RoleClaim", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.RoleClaim", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -154,7 +155,7 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetRoleClaims");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.User", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -222,7 +223,7 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserClaim", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.UserClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -248,7 +249,7 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetUserClaims");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserLogin", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.UserLogin", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -275,7 +276,7 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetUserLogins");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserRole", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -286,14 +287,24 @@ namespace Template.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("RoleId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
+                    b.HasIndex("RoleId1");
+
+                    b.HasIndex("UserId1");
+
                     b.ToTable("AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserToken", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.UserToken", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -318,7 +329,7 @@ namespace Template.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.RefreshToken", b =>
+            modelBuilder.Entity("Template.Domain.Dto.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -348,15 +359,57 @@ namespace Template.Data.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.Book", b =>
+            modelBuilder.Entity("Template.Domain.Dto.Tag", b =>
                 {
-                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", "AddedUser")
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AddedUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddedUserId");
+
+                    b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("Template.Domain.Dto.TagLanguage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Language")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SourceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceId");
+
+                    b.ToTable("TagLanguages");
+                });
+
+            modelBuilder.Entity("Template.Domain.Dto.Book", b =>
+                {
+                    b.HasOne("Template.Domain.Dto.IdentityModels.User", "AddedUser")
                         .WithMany()
                         .HasForeignKey("AddedUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Template.Entities.Concrete.Author", "Author")
+                    b.HasOne("Template.Domain.Dto.Author", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -367,9 +420,9 @@ namespace Template.Data.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.BookLanguage", b =>
+            modelBuilder.Entity("Template.Domain.Dto.BookLanguage", b =>
                 {
-                    b.HasOne("Template.Entities.Concrete.Book", "Source")
+                    b.HasOne("Template.Domain.Dto.Book", "Source")
                         .WithMany("Languages")
                         .HasForeignKey("SourceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -378,60 +431,72 @@ namespace Template.Data.Migrations
                     b.Navigation("Source");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.RoleClaim", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.RoleClaim", b =>
                 {
-                    b.HasOne("Template.Entities.Concrete.IdentityModels.Role", null)
+                    b.HasOne("Template.Domain.Dto.IdentityModels.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserClaim", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.UserClaim", b =>
                 {
-                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", null)
+                    b.HasOne("Template.Domain.Dto.IdentityModels.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserLogin", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.UserLogin", b =>
                 {
-                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", null)
+                    b.HasOne("Template.Domain.Dto.IdentityModels.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserRole", b =>
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.UserRole", b =>
                 {
-                    b.HasOne("Template.Entities.Concrete.IdentityModels.Role", null)
+                    b.HasOne("Template.Domain.Dto.IdentityModels.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", null)
+                    b.HasOne("Template.Domain.Dto.IdentityModels.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId1");
+
+                    b.HasOne("Template.Domain.Dto.IdentityModels.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Template.Domain.Dto.IdentityModels.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Template.Domain.Dto.IdentityModels.UserToken", b =>
+                {
+                    b.HasOne("Template.Domain.Dto.IdentityModels.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.IdentityModels.UserToken", b =>
+            modelBuilder.Entity("Template.Domain.Dto.RefreshToken", b =>
                 {
-                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Template.Entities.Concrete.RefreshToken", b =>
-                {
-                    b.HasOne("Template.Entities.Concrete.IdentityModels.User", "User")
+                    b.HasOne("Template.Domain.Dto.IdentityModels.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -440,7 +505,34 @@ namespace Template.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Template.Entities.Concrete.Book", b =>
+            modelBuilder.Entity("Template.Domain.Dto.Tag", b =>
+                {
+                    b.HasOne("Template.Domain.Dto.IdentityModels.User", "AddedUser")
+                        .WithMany()
+                        .HasForeignKey("AddedUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AddedUser");
+                });
+
+            modelBuilder.Entity("Template.Domain.Dto.TagLanguage", b =>
+                {
+                    b.HasOne("Template.Domain.Dto.Tag", "Source")
+                        .WithMany("Languages")
+                        .HasForeignKey("SourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Source");
+                });
+
+            modelBuilder.Entity("Template.Domain.Dto.Book", b =>
+                {
+                    b.Navigation("Languages");
+                });
+
+            modelBuilder.Entity("Template.Domain.Dto.Tag", b =>
                 {
                     b.Navigation("Languages");
                 });

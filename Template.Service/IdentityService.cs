@@ -5,8 +5,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Template.Common;
 using Template.Common.SettingsConfigurationFiles;
 using Template.Common.Structs;
 using Template.Data;
@@ -55,7 +55,10 @@ namespace Template.Service
             var identityResult = _userManager.CreateAsync(newUser, password).Result;
 
             if (!identityResult.Succeeded)
-                return default;
+                return new AuthResult
+                {
+                    Error = identityResult.Errors.FirstOrDefault()?.Description
+                };
 
             var user = _userManager.FindByEmailAsync(email).Result;
 
@@ -71,7 +74,6 @@ namespace Template.Service
                 {
                     Error = "User does not exist"
                 };
-
             var isPasswordValid = _userManager.CheckPasswordAsync(user, password).Result;
 
             if (!isPasswordValid)
@@ -88,21 +90,21 @@ namespace Template.Service
             _roleManager.CreateAsync(new Role
             {
                 Name = role
-            }).Wait(); 
+            }).Wait();
         }
 
         public void AddUserRole(MyKey userId, string role)
         {
             var user = _templateContext.Users.Find(userId);
 
-            _userManager.AddToRoleAsync(user, role).Wait(); 
+            _userManager.AddToRoleAsync(user, role).Wait();
         }
 
         public void AddUserClaim(MyKey userId, string claimName)
         {
             var user = _userManager.FindByIdAsync(userId.ToString()).Result;
             _userManager.AddClaimAsync(user, new Claim(claimName, "true")).Wait();
-            _templateContext.SaveChanges(); 
+            _templateContext.SaveChanges();
         }
 
         public AuthResult RefreshToken(string token, Guid refreshToken)
@@ -183,15 +185,27 @@ namespace Template.Service
                 new(JwtRegisteredClaimNames.Sub, user.Email),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(JwtRegisteredClaimNames.Email, user.Email),
-                new(JwtRegisteredClaimNames.Email, user.Email),
                 new("id", user.Id.ToString())
             };
 
             var userClaims = _userManager.GetClaimsAsync(user).Result;
             claims.AddRange(userClaims);
 
-            var userRoles = _userManager.GetRolesAsync(user).Result;
-            claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+            var userRoles = _templateContext.UserRoles.AsNoTracking().Where(x => x.UserId == user.Id);
+            var roles = _templateContext.Roles.AsNoTracking().Where(x => userRoles.Any(xx => xx.RoleId == x.Id));
+
+            var roleClaims = _templateContext.RoleClaims.AsNoTracking().Where(x => roles.Select(xx => xx.Id).Contains(x.RoleId));
+
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.Name)));
+            claims.AddRange(roleClaims.Select(x => new Claim(x.ClaimType, x.ClaimValue)));
+
+            claims = claims.Select(x => new
+                {
+                    x.Type,
+                    x.Value
+                }).Distinct()
+                .Select(x => new Claim(x.Type, x.Value))
+                .ToList();
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

@@ -61,6 +61,7 @@ namespace Template.Caching
                 await cacheService.CacheResponseAsync(cacheKey, okObjectResult.Value, TimeSpan.FromSeconds(_timeToLiveSeconds));
             }
         }
+        
         private static string GenerateCacheKeyFromRequest(HttpRequest request)
         {
             var keyBuilder = new StringBuilder();
