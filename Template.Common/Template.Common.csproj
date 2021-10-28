@@ -11,8 +11,6 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <PackageReference Include="AspNetCoreRateLimit" Version="4.0.1" />
-      <PackageReference Include="AspNetCoreRateLimit.Redis" Version="1.0.0" />
       <PackageReference Include="AutoMapper" Version="10.1.1" />
       <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
       <PackageReference Include="Hangfire" Version="1.7.26" />
@@ -59,6 +57,11 @@
       <Compile Update="SettingsConfigurationFiles\MyServices.cs">
         <DependentUpon>SettingsHolder.cs</DependentUpon>
       </Compile>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\AspNetCoreRateLimit.Redis\AspNetCoreRateLimit.Redis.csproj" />
+      <ProjectReference Include="..\AspNetCoreRateLimit\AspNetCoreRateLimit.csproj" />
     </ItemGroup>
 
 </Project>

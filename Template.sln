@@ -20,6 +20,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Caching", "Templat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.BackgroundTasks", "Template.BackgroundTasks\Template.BackgroundTasks.csproj", "{C015324E-6928-42D3-9587-47F3A19B0564}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalProjects", "ExternalProjects", "{67A99EB3-59BA-4398-A2AB-2F5C5B04BBAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreRateLimit", "AspNetCoreRateLimit\AspNetCoreRateLimit.csproj", "{74F1EA43-9909-4E8C-92C9-96EFEDC06652}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreRateLimit.Redis", "AspNetCoreRateLimit.Redis\AspNetCoreRateLimit.Redis.csproj", "{459772EF-63E9-406F-B208-69FCC270AD32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,5 +72,17 @@ Global
 		{C015324E-6928-42D3-9587-47F3A19B0564}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C015324E-6928-42D3-9587-47F3A19B0564}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C015324E-6928-42D3-9587-47F3A19B0564}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74F1EA43-9909-4E8C-92C9-96EFEDC06652}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74F1EA43-9909-4E8C-92C9-96EFEDC06652}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74F1EA43-9909-4E8C-92C9-96EFEDC06652}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74F1EA43-9909-4E8C-92C9-96EFEDC06652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{459772EF-63E9-406F-B208-69FCC270AD32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{459772EF-63E9-406F-B208-69FCC270AD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{459772EF-63E9-406F-B208-69FCC270AD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{459772EF-63E9-406F-B208-69FCC270AD32}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{74F1EA43-9909-4E8C-92C9-96EFEDC06652} = {67A99EB3-59BA-4398-A2AB-2F5C5B04BBAC}
+		{459772EF-63E9-406F-B208-69FCC270AD32} = {67A99EB3-59BA-4398-A2AB-2F5C5B04BBAC}
 	EndGlobalSection
 EndGlobal
