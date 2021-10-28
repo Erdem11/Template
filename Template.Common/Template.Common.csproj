@@ -37,5 +37,23 @@
       <PackageReference Include="StackExchange.Redis" Version="2.2.79" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Update="SettingsConfigurationFiles\CacheSettings.cs">
+        <DependentUpon>SettingsHolder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SettingsConfigurationFiles\JwtSettings.cs">
+        <DependentUpon>SettingsHolder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SettingsConfigurationFiles\LoggingSettings.cs">
+        <DependentUpon>SettingsHolder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SettingsConfigurationFiles\MsSqlSettings.cs">
+        <DependentUpon>SettingsHolder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SettingsConfigurationFiles\RedisSettings.cs">
+        <DependentUpon>SettingsHolder.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
 
 </Project>

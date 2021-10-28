@@ -1,4 +1,4 @@
-﻿namespace Template.Caching
+﻿namespace Template.Common.SettingsConfigurationFiles
 {
     public class CacheSettings
     {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Template.Caching.RedisCaching;
+using Template.Common.SettingsConfigurationFiles;
 
 namespace Template.Caching
 {

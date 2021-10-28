@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Template.Common;
+using Template.Common.SettingsConfigurationFiles;
 using Template.Common.Structs;
 using Template.Data;
 using Template.Domain.Dto;
@@ -23,23 +24,22 @@ namespace Template.Service
         AuthResult RefreshToken(string token, Guid refreshToken);
         void AddUserRole(MyKey userId, string role);
         void AddRole(string role);
+        ClaimsPrincipal GetPrincipalFromToken(string token);
     }
-
-
 
     public class IdentityService : IIdentityService
     {
-        private readonly JwtSettings _jwtSettings;
         private readonly TemplateContext _templateContext;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
+        private readonly SettingsHolder _settingsHolder;
 
-        public IdentityService(UserManager<User> userManager, RoleManager<Role> roleManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, TemplateContext templateContext)
+        public IdentityService(UserManager<User> userManager, RoleManager<Role> roleManager, SettingsHolder settingsHolder, TokenValidationParameters tokenValidationParameters, TemplateContext templateContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _jwtSettings = jwtSettings;
+            _settingsHolder = settingsHolder;
             _tokenValidationParameters = tokenValidationParameters;
             _templateContext = templateContext;
         }
@@ -125,7 +125,7 @@ namespace Template.Service
                 return response;
             }
 
-            var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value;
+            var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
             var storedRefreshToken = _templateContext.RefreshTokens.SingleOrDefault(x => x.Id == refreshToken);
 
@@ -176,7 +176,7 @@ namespace Template.Service
         private AuthResult GenerateAuthenticationResultForUser(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(_settingsHolder.JwtSettings.Secret);
 
             var claims = new List<Claim>
             {
@@ -196,7 +196,7 @@ namespace Template.Service
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.Add(_jwtSettings.TokenLifetime),
+                Expires = DateTime.UtcNow.Add(_settingsHolder.JwtSettings.TokenLifetime),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -206,7 +206,7 @@ namespace Template.Service
             {
                 JwtId = token.Id,
                 UserId = user.Id,
-                ExpiryDate = DateTime.UtcNow.Add(_jwtSettings.RefreshTokenLifeTime)
+                ExpiryDate = DateTime.UtcNow.Add(_settingsHolder.JwtSettings.RefreshTokenLifeTime)
             };
 
             _templateContext.RefreshTokens.Add(refreshToken);
@@ -222,7 +222,7 @@ namespace Template.Service
             };
         }
 
-        private ClaimsPrincipal GetPrincipalFromToken(string token)
+        public ClaimsPrincipal GetPrincipalFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 

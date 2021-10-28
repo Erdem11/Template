@@ -6,7 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Template.Caching.RedisCaching;
+using Template.Common.SettingsConfigurationFiles;
 using Template.Middleware;
+using Template.Service;
 
 namespace Template.Api
 {
@@ -24,15 +26,10 @@ namespace Template.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureServices(Configuration);
-
-            var redisCacheSettings = new RedisCacheSettings();
-            Configuration.GetSection(nameof(RedisCacheSettings)).Bind(redisCacheSettings);
-            services.AddHangfire(x => x.UseRedisStorage(redisCacheSettings.ConnectionString));
-            services.AddHangfireServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider, IIdentityService identityService)
         {
             if (env.IsDevelopment())
             {
@@ -59,8 +56,14 @@ namespace Template.Api
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
-            
-            app.UseHangfireDashboard();
+
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = new[]
+                {
+                    new MyAuthorizationFilter(identityService)
+                }
+            });
         }
     }
 }

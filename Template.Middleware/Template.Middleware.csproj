@@ -46,6 +46,9 @@
       <Compile Update="ConfigureBackgroundTasksServicesExtensions.cs">
         <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
       </Compile>
+      <Compile Update="ConfigureHangfireServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

@@ -2,17 +2,17 @@
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Template.Common.SettingsConfigurationFiles;
 
 namespace Template.Middleware
 {
     public static class ConfigureSwaggerServicesExtensions
     {
-        public static void Configure(this IServiceCollection services, IConfiguration configuration)
+        public static void Configure(this IServiceCollection services, SettingsHolder settings)
         {
             services.AddSwaggerGen(c => {
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

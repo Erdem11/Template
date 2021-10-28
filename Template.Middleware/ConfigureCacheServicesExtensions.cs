@@ -4,62 +4,46 @@ using StackExchange.Redis;
 using Template.Caching;
 using Template.Caching.InMemoryCaching;
 using Template.Caching.RedisCaching;
+using Template.Common.SettingsConfigurationFiles;
 
 namespace Template.Middleware
 {
     public static class ConfigureCacheServicesExtensions
     {
-        public static void Configure(this IServiceCollection services, IConfiguration configuration)
+        public static void Configure(this IServiceCollection services, SettingsHolder settings)
         {
-            var cachingSettings = new CacheSettings();
-            configuration.GetSection(nameof(CacheSettings)).Bind(cachingSettings);
-            services.AddSingleton(cachingSettings);
-
-            if (!cachingSettings.Enabled)
+            if (!settings.CacheSettings.Enabled)
             {
                 return;
             }
 
-            if (cachingSettings.Redis)
+            if (settings.CacheSettings.Redis)
             {
-                ConfigureRedis(services, configuration);
+                ConfigureRedis(services, settings);
                 return;
             }
 
-            if (cachingSettings.InMemory)
+            if (settings.CacheSettings.InMemory)
             {
-                ConfigureInMemory(services, configuration);
+                ConfigureInMemory(services, settings);
                 return;
             }
         }
 
-        private static void ConfigureRedis(this IServiceCollection services, IConfiguration configuration)
+        private static void ConfigureRedis(this IServiceCollection services, SettingsHolder settings)
         {
-            var redisCacheSettings = new RedisCacheSettings();
-            configuration.GetSection(nameof(RedisCacheSettings)).Bind(redisCacheSettings);
-            services.AddSingleton(redisCacheSettings);
-
-            if (!redisCacheSettings.Enabled)
+            if (!settings.RedisSettings.Enabled)
             {
                 return;
             }
 
-            services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(redisCacheSettings.ConnectionString));
+            services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(settings.RedisSettings.ConnectionString));
             services.AddSingleton<ICacheService, RedisCacheService>();
             services.AddSingleton<IResponseCacheService, ResponseCacheService>();
         }
 
-        private static void ConfigureInMemory(this IServiceCollection services, IConfiguration configuration)
+        private static void ConfigureInMemory(this IServiceCollection services, SettingsHolder settings)
         {
-            var inMemoryCacheSettings = new InMemoryCacheSettings();
-            configuration.GetSection(nameof(InMemoryCacheSettings)).Bind(inMemoryCacheSettings);
-            services.AddSingleton(inMemoryCacheSettings);
-
-            if (!inMemoryCacheSettings.Enabled)
-            {
-                return;
-            }
-
             services.AddSingleton<ICacheService, InMemoryCacheService>();
             services.AddSingleton<IResponseCacheService, ResponseCacheService>();
         }

@@ -1,19 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using Template.BackgroundTasks;
+using Template.Common.SettingsConfigurationFiles;
 
 namespace Template.Middleware
 {
     public static class ConfigureBackgroundTasksServicesExtensions
     {
-        public static void Configure(this IServiceCollection services, IConfiguration configuration)
+        public static void Configure(this IServiceCollection services, SettingsHolder settings)
         {
-            var redisSubscriberSettings = new RedisSubscriberSettings();
-            configuration.GetSection(nameof(RedisSubscriberSettings)).Bind(redisSubscriberSettings);
-            services.AddSingleton(redisSubscriberSettings);
-            
-            services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(redisSubscriberSettings.ConnectionString));
+            if (!settings.RedisSettings.Enabled)
+                return;
+
+            services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(settings.RedisSettings.ConnectionString));
             services.AddHostedService<RedisSubscriber>();
         }
     }
