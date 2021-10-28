@@ -1,11 +1,18 @@
+using System.Linq;
+using System.Threading.Tasks;
 using AspNetCoreRateLimit;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Template.HealthChecks;
+using Template.HealthChecks.HealthCheckResponseModels;
 using Template.Middleware;
 using Template.Service;
 
@@ -30,6 +37,29 @@ namespace Template.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider, IIdentityService identityService)
         {
+            app.UseHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = async (context, report) => {
+                    context.Response.ContentType = "application/json";
+
+                    var response = new HealthCheckResponse
+                    {
+                        Status = report.Status.ToString(),
+                        Duration = report.TotalDuration,
+                        HealthChecks = report.Entries
+                            .Select(x
+                                => new HealthCheck
+                                {
+                                    Component = x.Key,
+                                    Description = x.Value.Description,
+                                    Status = x.Value.Status.ToString(),
+                                }).ToList()
+                    };
+
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+                }
+            });
+            
             app.UseClientRateLimiting();
             if (env.IsDevelopment())
             {

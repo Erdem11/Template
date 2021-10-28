@@ -11,6 +11,7 @@
       <ProjectReference Include="..\Template.Common\Template.Common.csproj" />
       <ProjectReference Include="..\Template.Domain\Template.Domain.csproj" />
       <ProjectReference Include="..\Template.Entities\Template.Entities.csproj" />
+      <ProjectReference Include="..\Template.HealthChecks\Template.HealthChecks.csproj" />
       <ProjectReference Include="..\Template.Mappers\Template.Mappers.csproj" />
       <ProjectReference Include="..\Template.Service\Template.Service.csproj" />
     </ItemGroup>
@@ -47,6 +48,9 @@
         <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
       </Compile>
       <Compile Update="ConfigureHangfireServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureRateLimitServicesExtensions.cs">
         <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
       </Compile>
     </ItemGroup>

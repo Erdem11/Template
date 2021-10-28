@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreRateLimit", "AspN
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreRateLimit.Redis", "AspNetCoreRateLimit.Redis\AspNetCoreRateLimit.Redis.csproj", "{459772EF-63E9-406F-B208-69FCC270AD32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.HealthChecks", "Template.HealthChecks\Template.HealthChecks.csproj", "{114D5F11-5B7A-461D-8A65-4B3C02519098}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{459772EF-63E9-406F-B208-69FCC270AD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{459772EF-63E9-406F-B208-69FCC270AD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{459772EF-63E9-406F-B208-69FCC270AD32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{114D5F11-5B7A-461D-8A65-4B3C02519098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{114D5F11-5B7A-461D-8A65-4B3C02519098}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{114D5F11-5B7A-461D-8A65-4B3C02519098}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{114D5F11-5B7A-461D-8A65-4B3C02519098}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{74F1EA43-9909-4E8C-92C9-96EFEDC06652} = {67A99EB3-59BA-4398-A2AB-2F5C5B04BBAC}

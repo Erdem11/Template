@@ -36,7 +36,7 @@ namespace Template.Middleware
 
             services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(settings.RedisSettings.ConnectionString));
             services.AddRedisRateLimiting();
-
+            
             return true;
         }
 
