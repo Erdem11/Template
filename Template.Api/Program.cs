@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using Template.Common;
+using Template.Common.SettingsConfigurationFiles;
 using Template.Data;
 using Template.Domain.Dto.IdentityModels;
 
@@ -100,12 +101,14 @@ namespace Template.Api
                 configurationBuilder.SetBasePath(env.ContentRootPath);
                 var configurationNameList = new[]
                 {
-                    "cache", "jwt", "logging", "mssql", "redis"
+                    "cache", "jwt", "logging", "mssql", "redis", "clientratelimiting", "clientratelimitpolicies",
                 };
 
                 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
                 environment = environment == null ? null : environment + ".";
 
+                // for MyServices file
+                configurationBuilder.AddJsonFile($"appsettings.{environment}json", false, true);
                 foreach (var s in configurationNameList)
                 {
                     configurationBuilder.AddJsonFile($"appsettings.{environment + s}.json", false, true);

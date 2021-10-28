@@ -53,6 +53,12 @@
       <Content Update="appsettings.Development.cache.json">
         <DependentUpon>appsettings.Development.json</DependentUpon>
       </Content>
+      <Content Update="appsettings.Development.clientratelimiting.json">
+        <DependentUpon>appsettings.Development.json</DependentUpon>
+      </Content>
+      <Content Update="appsettings.Development.clientratelimitpolicies.json">
+        <DependentUpon>appsettings.Development.json</DependentUpon>
+      </Content>
     </ItemGroup>
 
 </Project>
