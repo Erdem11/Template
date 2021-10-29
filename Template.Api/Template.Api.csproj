@@ -44,7 +44,7 @@
       <Content Update="appsettings.Development.redis.json">
         <DependentUpon>appsettings.Development.json</DependentUpon>
       </Content>
-      <Content Update="appsettings.Development.mssql.json">
+      <Content Update="appsettings.Development.sql.json">
         <DependentUpon>appsettings.Development.json</DependentUpon>
       </Content>
       <Content Update="appsettings.Development.logging.json">

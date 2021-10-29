@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Template.Common.SettingsConfigurationFiles;
 using Template.Common.Structs;
 using Template.Domain.Dto;
 using Template.Domain.Dto.Abstract;
@@ -27,9 +28,25 @@ namespace Template.Data
 
     public class TemplateContext : IdentityDbContext<User, Role, MyKey, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
     {
-        public TemplateContext(DbContextOptions<TemplateContext> options)
+        private readonly SettingsHolder _settingsHolder;
+        public TemplateContext(DbContextOptions<TemplateContext> options, SettingsHolder settingsHolder)
             : base(options)
         {
+            _settingsHolder = settingsHolder;
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (_settingsHolder.SqlSettings.Mssql)
+            {
+                optionsBuilder.UseNpgsql(_settingsHolder.SqlSettings.MssqlConnectionString);
+                return;
+            }
+
+            if (_settingsHolder.SqlSettings.Npgsql)
+            {
+                optionsBuilder.UseNpgsql(_settingsHolder.SqlSettings.NpgsqlConnectionString);
+                return;
+            }
         }
 
         public DbSet<Book> Books { get; set; }

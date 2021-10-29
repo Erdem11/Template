@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Hangfire;
 using Hangfire.Dashboard;
+using Hangfire.PostgreSql;
 using Microsoft.Extensions.DependencyInjection;
 using Template.Common;
 using Template.Common.SettingsConfigurationFiles;
@@ -18,8 +19,19 @@ namespace Template.Middleware
                 services.AddHangfireServer();
                 return;
             }
+            
+            if (settings.SqlSettings.Mssql)
+            {
+                services.AddHangfire(x => x.UseSqlServerStorage(settings.SqlSettings.MssqlConnectionString));
+                return;
+            }
 
-            services.AddHangfire(x => x.UseSqlServerStorage(settings.MsSqlSettings.ConnectionString));
+            if (settings.SqlSettings.Npgsql)
+            {
+                services.AddHangfire(x => x.UsePostgreSqlStorage(settings.SqlSettings.MssqlConnectionString));
+                return;
+            }
+
             services.AddHangfireServer();
         }
     }

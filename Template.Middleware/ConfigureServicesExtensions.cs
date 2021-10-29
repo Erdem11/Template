@@ -44,7 +44,7 @@ namespace Template.Middleware
             configuration.GetSection(nameof(CacheSettings)).Bind(settings.CacheSettings);
             configuration.GetSection(nameof(JwtSettings)).Bind(settings.JwtSettings);
             configuration.GetSection(nameof(LoggingSettings)).Bind(settings.LoggingSettings);
-            configuration.GetSection(nameof(MsSqlSettings)).Bind(settings.MsSqlSettings);
+            configuration.GetSection(nameof(SqlSettings)).Bind(settings.SqlSettings);
             configuration.GetSection(nameof(RedisSettings)).Bind(settings.RedisSettings);
             configuration.GetSection(nameof(ClientRateLimitOptions)).Bind(settings.ClientRateLimitOptions);
             configuration.GetSection(nameof(ClientRateLimitPolicies)).Bind(settings.ClientRateLimitPolicies);

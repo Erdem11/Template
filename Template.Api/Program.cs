@@ -101,7 +101,7 @@ namespace Template.Api
                 configurationBuilder.SetBasePath(env.ContentRootPath);
                 var configurationNameList = new[]
                 {
-                    "cache", "jwt", "logging", "mssql", "redis", "clientratelimiting", "clientratelimitpolicies",
+                    "cache", "jwt", "logging", "sql", "redis", "clientratelimiting", "clientratelimitpolicies",
                 };
 
                 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");

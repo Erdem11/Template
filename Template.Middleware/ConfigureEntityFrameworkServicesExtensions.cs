@@ -7,13 +7,23 @@ namespace Template.Middleware
 {
     public static class ConfigureEntityFrameworkServicesExtensions
     {
-        public static void Configure(this IServiceCollection services, SettingsHolder settings)
+        public static void Configure(this IServiceCollection services, SettingsHolder settingsHolder)
         {
             // add EntityFramework
             services.AddDbContext<TemplateContext>(options => {
-                // options.EnableSensitiveDataLogging();
-                options.UseSqlServer(settings.MsSqlSettings.ConnectionString,
-                b => b.MigrationsAssembly("Template.Data"));
+                if (settingsHolder.SqlSettings.Mssql)
+                {
+                    options.UseSqlServer(settingsHolder.SqlSettings.MssqlConnectionString,
+                    b => b.MigrationsAssembly("Template.Data"));
+                    return;
+                }
+
+                if (settingsHolder.SqlSettings.Npgsql)
+                {
+                    options.UseNpgsql(settingsHolder.SqlSettings.NpgsqlConnectionString,
+                    b => b.MigrationsAssembly("Template.Data"));
+                    return;
+                }
             });
         }
     }
