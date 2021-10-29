@@ -4,7 +4,6 @@ using Template.Common.SettingsConfigurationFiles;
 
 namespace Template.Data
 {
-    
     /// <summary>
     /// Secondary DB
     /// </summary>
@@ -20,28 +19,18 @@ namespace Template.Data
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (_settingsHolder.SqlSettings.SecondaryDb.Enabled)
-            {
-                if (_settingsHolder.SqlSettings.SecondaryDb.Npgsql)
-                {
-                    optionsBuilder.UseNpgsql(_settingsHolder.SqlSettings.SecondaryDb.ConnectionString);
-                    return;
-                }
-                
-                optionsBuilder.UseSqlServer(_settingsHolder.SqlSettings.SecondaryDb.ConnectionString);
-                return;
-            }
+            var dbOptions = _settingsHolder.SqlSettings.GetSecondary();
             
-            if (_settingsHolder.SqlSettings.PrimaryDb.Enabled)
+            switch (dbOptions.DbType)
             {
-                if (_settingsHolder.SqlSettings.PrimaryDb.Mssql)
-                {
-                    optionsBuilder.UseSqlServer(_settingsHolder.SqlSettings.PrimaryDb.ConnectionString);
-                    return;
-                }
-                
-                optionsBuilder.UseNpgsql(_settingsHolder.SqlSettings.PrimaryDb.ConnectionString);
-                return;
+                case DbTypes.Mssql:
+                    optionsBuilder.UseSqlServer(dbOptions.ConnectionString);
+                    break;
+                case DbTypes.Npgsql:
+                    optionsBuilder.UseNpgsql(dbOptions.ConnectionString);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }

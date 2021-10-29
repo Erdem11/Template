@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -11,27 +10,29 @@ namespace Template.Api.Controllers.V1._0
     [ApiVersion("1.0")]
     public class SignalrController : TemplateControllerBase
     {
-        // GET
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string message)
         {
             var received = string.Empty;
 
             var connection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:5001/MessagingHub")
+                .WithUrl("https://localhost:5001/MessagingHub", options => {
+                    options.AccessTokenProvider = AccessTokenTask;
+                })
                 .Build();
-            
+
             await connection.StartAsync();
 
-            connection.On<string>("ReceiveMessageAsync", message => 
-                received = message
+            connection.On<string>("ReceiveMessageAsync", response =>
+                received = response
             );
-            
-            await connection.SendAsync("EchoAsync", "aaa");
-            var rr =  await connection.InvokeCoreAsync<string>("EchoAsync", new object[]{"aaa"});
 
-            await connection.SendAsync("EchoAsync", "aaa");
-            await Task.Delay(5000);
+            await connection.SendAsync("EchoAsync", message);
+            var invokeResult = await connection.InvokeCoreAsync<string>("EchoAsync", new object[]
+            {
+                message
+            });
+
             await connection.StopAsync();
             return await Task.FromResult(Ok(received));
         }

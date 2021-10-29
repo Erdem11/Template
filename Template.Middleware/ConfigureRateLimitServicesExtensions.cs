@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Threading;
 using System.Threading.Tasks;
 using AspNetCoreRateLimit;
 using AspNetCoreRateLimit.Redis;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 using Template.Common.SettingsConfigurationFiles;
 
@@ -21,6 +15,11 @@ namespace Template.Middleware
     {
         public static void Configure(IServiceCollection services, SettingsHolder settings)
         {
+            if (!settings.MyServices.ApiRateLimit)
+            {
+                return;
+            }
+            
             services.AddOptions();
 
             _ = settings.MyServices.Redis ? ConfigureRedis(services, settings) : ConfigureInMemory(services, settings);

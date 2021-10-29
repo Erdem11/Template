@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Template.Common.SettingsConfigurationFiles;
 using Template.Data;
@@ -11,63 +12,39 @@ namespace Template.Middleware
         {
             // primary db configuration
             services.AddDbContext<TemplateContext>(options => {
-                if (settingsHolder.SqlSettings.PrimaryDb.Enabled)
-                {
-                    if (settingsHolder.SqlSettings.PrimaryDb.Mssql)
-                    {
-                        options.UseSqlServer(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
-                        b => b.MigrationsAssembly("Template.Data"));
-                        return;
-                    }
+                var dbOptions = settingsHolder.SqlSettings.GetPrimary();
 
-                    options.UseNpgsql(settingsHolder.SqlSettings.PrimaryDb.ConnectionString,
-                    b => b.MigrationsAssembly("Template.Data"));
-                }
-                
-                if (settingsHolder.SqlSettings.SecondaryDb.Enabled)
+                switch (dbOptions.DbType)
                 {
-                    if (settingsHolder.SqlSettings.SecondaryDb.Mssql)
-                    {
-                        options.UseSqlServer(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
+                    case DbTypes.Mssql:
+                        options.UseSqlServer(dbOptions.ConnectionString,
                         b => b.MigrationsAssembly("Template.Data"));
-                        return;
-                    }
-
-                    options.UseNpgsql(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
-                    b => b.MigrationsAssembly("Template.Data"));
-                    
-                    return;
+                        break;
+                    case DbTypes.Npgsql:
+                        options.UseNpgsql(dbOptions.ConnectionString,
+                        b => b.MigrationsAssembly("Template.Data"));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             });
-            
+
             // secondary db configuration
             services.AddDbContext<MessagingContext>(options => {
-                if (settingsHolder.SqlSettings.SecondaryDb.Enabled)
-                {
-                    if (settingsHolder.SqlSettings.SecondaryDb.Mssql)
-                    {
-                        options.UseSqlServer(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
-                        b => b.MigrationsAssembly("Template.Data"));
-                        return;
-                    }
-
-                    options.UseNpgsql(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
-                    b => b.MigrationsAssembly("Template.Data"));
-                    
-                    return;
-                }
+                var dbOptions = settingsHolder.SqlSettings.GetSecondary();
                 
-                if (settingsHolder.SqlSettings.PrimaryDb.Enabled)
+                switch (dbOptions.DbType)
                 {
-                    if (settingsHolder.SqlSettings.PrimaryDb.Mssql)
-                    {
-                        options.UseSqlServer(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
+                    case DbTypes.Mssql:
+                        options.UseSqlServer(dbOptions.ConnectionString,
                         b => b.MigrationsAssembly("Template.Data"));
-                        return;
-                    }
-
-                    options.UseNpgsql(settingsHolder.SqlSettings.PrimaryDb.ConnectionString,
-                    b => b.MigrationsAssembly("Template.Data"));
+                        break;
+                    case DbTypes.Npgsql:
+                        options.UseNpgsql(dbOptions.ConnectionString,
+                        b => b.MigrationsAssembly("Template.Data"));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             });
         }

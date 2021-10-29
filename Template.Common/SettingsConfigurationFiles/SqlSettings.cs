@@ -11,9 +11,19 @@
         public class MyDbOptions
         {
             public bool Enabled { get; set; }
-            public bool Mssql { get; set; }
-            public bool Npgsql { get; set; }
+            public DbTypes DbType { get; set; }
             public string ConnectionString { get; set; }
         }
+
+        public MyDbOptions GetSecondary() =>
+            SecondaryDb.Enabled ? SecondaryDb : PrimaryDb;
+        public MyDbOptions GetPrimary() =>
+            PrimaryDb.Enabled ? PrimaryDb : SecondaryDb;
+    }
+    
+    public enum DbTypes
+    {
+        Mssql = 1,
+        Npgsql = 2,
     }
 }

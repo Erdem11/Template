@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
@@ -13,37 +14,26 @@ namespace Template.Middleware
     {
         public static void Configure(this IServiceCollection services, SettingsHolder settingsHolder)
         {
-            if (settingsHolder.RedisSettings.Enabled)
+            if (settingsHolder.MyServices.Redis)
             {
                 services.AddHangfire(x => x.UseRedisStorage(settingsHolder.RedisSettings.ConnectionString));
                 services.AddHangfireServer();
                 return;
             }
 
-            if (settingsHolder.SqlSettings.SecondaryDb.Enabled)
+            var dbOptions = settingsHolder.SqlSettings.GetSecondary();
+            switch (dbOptions.DbType)
             {
-                if (settingsHolder.SqlSettings.SecondaryDb.Mssql)
-                {
-                    services.AddHangfire(x => x.UseSqlServerStorage(settingsHolder.SqlSettings.SecondaryDb.ConnectionString));
-                    return;
-                }
-
-                services.AddHangfire(x => x.UsePostgreSqlStorage(settingsHolder.SqlSettings.SecondaryDb.ConnectionString));
-                return;
+                case DbTypes.Mssql:
+                    services.AddHangfire(x => x.UseSqlServerStorage(dbOptions.ConnectionString));
+                    break;
+                case DbTypes.Npgsql:
+                    services.AddHangfire(x => x.UsePostgreSqlStorage(dbOptions.ConnectionString));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
             
-            if (settingsHolder.SqlSettings.PrimaryDb.Enabled)
-            {
-                if (settingsHolder.SqlSettings.PrimaryDb.Mssql)
-                {
-                    services.AddHangfire(x => x.UseSqlServerStorage(settingsHolder.SqlSettings.PrimaryDb.ConnectionString));
-                    return;
-                }
-
-                services.AddHangfire(x => x.UsePostgreSqlStorage(settingsHolder.SqlSettings.PrimaryDb.ConnectionString));
-                return;
-            }
-
             services.AddHangfireServer();
         }
     }

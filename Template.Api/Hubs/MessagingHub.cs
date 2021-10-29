@@ -52,6 +52,7 @@ namespace Template.Api.Hubs
 
         public async Task<string> EchoAsync(string message)
         {
+            BackgroundJob.Enqueue<MessagingHubHelper>(x => x.AddMessageToDb(new Guid(), message));
             await Clients.Caller.ReceiveMessageAsync(message);
             return message;
         }

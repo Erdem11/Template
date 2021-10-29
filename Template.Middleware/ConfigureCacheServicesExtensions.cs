@@ -12,7 +12,7 @@ namespace Template.Middleware
     {
         public static void Configure(this IServiceCollection services, SettingsHolder settings)
         {
-            if (!settings.CacheSettings.Enabled)
+            if (!settings.MyServices.Cache)
             {
                 return;
             }

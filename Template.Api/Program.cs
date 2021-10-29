@@ -1,4 +1,6 @@
 using System;
+using System.Configuration;
+using System.IO;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
+using Serilog.Sinks.MSSqlServer;
 using Template.Common;
 using Template.Common.SettingsConfigurationFiles;
 using Template.Data;
@@ -70,6 +73,8 @@ namespace Template.Api
 
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
+            var a = Host.CreateDefaultBuilder(args);
+
             return Host.CreateDefaultBuilder(args)
                 .UseSerilog((context, configuration) => {
                     ConfigureSerilog(configuration, context);
@@ -81,18 +86,22 @@ namespace Template.Api
                 });
         }
 
+        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+            .Build();
+
         private static void ConfigureSerilog(LoggerConfiguration configuration, HostBuilderContext context)
         {
+            var connectionString = NewMethod(new ConfigurationBuilder());
+            var settingsHolder = new SettingsHolder();
+            connectionString.Bind(settingsHolder);
+
             configuration.Enrich.FromLogContext()
                 .Enrich.WithMachineName()
                 .WriteTo.Console()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
-                {
-                    IndexFormat = $"{context.Configuration["ApplicationName"]}-logs-{context.HostingEnvironment.EnvironmentName?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
-                    AutoRegisterTemplate = true,
-                    NumberOfShards = 2,
-                    NumberOfReplicas = 1
-                })
+                .WriteToDb(settingsHolder, context)
                 .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
                 .ReadFrom.Configuration(context.Configuration);
         }
@@ -103,22 +112,58 @@ namespace Template.Api
                 configurationBuilder) => {
                 var env = webHostBuilderContext.HostingEnvironment;
                 configurationBuilder.SetBasePath(env.ContentRootPath);
-                var configurationNameList = new[]
-                {
-                    "cache", "jwt", "logging", "sql", "redis", "clientratelimiting", "clientratelimitpolicies",
-                };
-
-                var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-                environment = environment == null ? null : environment + ".";
-
-                // for MyServices file
-                configurationBuilder.AddJsonFile($"appsettings.{environment}json", false, true);
-                foreach (var s in configurationNameList)
-                {
-                    configurationBuilder.AddJsonFile($"appsettings.{environment + s}.json", false, true);
-                }
-                configurationBuilder.AddEnvironmentVariables();
+                NewMethod(configurationBuilder);
             });
+        }
+        private static IConfiguration NewMethod(IConfigurationBuilder configurationBuilder)
+        {
+            var configurationNameList = new[]
+            {
+                "cache", "jwt", "logging", "sql", "redis", "clientratelimiting", "clientratelimitpolicies",
+            };
+
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            environment = environment == null ? null : environment + ".";
+
+            // for MyServices file
+            configurationBuilder.AddJsonFile($"appsettings.{environment}json", false, true);
+            foreach (var s in configurationNameList)
+            {
+                configurationBuilder.AddJsonFile($"appsettings.{environment + s}.json", false, true);
+            }
+            configurationBuilder.AddEnvironmentVariables();
+
+            return configurationBuilder.Build();
+        }
+    }
+
+    public static class SerilogHelpers
+    {
+        public static LoggerConfiguration WriteToDb(this LoggerConfiguration loggerConfiguration, SettingsHolder settingsHolder, HostBuilderContext context)
+        {
+            if (settingsHolder.MyServices.ElasticSearch)
+            {
+                return loggerConfiguration.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+                {
+                    IndexFormat = $"{context.Configuration["ApplicationName"]}-logs-{context.HostingEnvironment.EnvironmentName?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
+                    AutoRegisterTemplate = true,
+                    NumberOfShards = 2,
+                    NumberOfReplicas = 1
+                });
+            }
+
+            var dbOptions = settingsHolder.SqlSettings.GetSecondary();
+            return dbOptions.DbType switch
+            {
+                DbTypes.Mssql => loggerConfiguration.WriteTo.MSSqlServer(dbOptions.ConnectionString, new MSSqlServerSinkOptions
+                {
+                    TableName = "TemplateLogs",
+                    AutoCreateSqlTable = true,
+                    SchemaName = "serilog"
+                }),
+                DbTypes.Npgsql => loggerConfiguration.WriteTo.PostgreSQL(dbOptions.ConnectionString, "TemplateLogs", needAutoCreateTable: true),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
 }

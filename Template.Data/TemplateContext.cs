@@ -18,13 +18,13 @@ namespace Template.Data
     // dotnet tool install --global dotnet-ef
 
     // add migration
-    // dotnet ef --startup-project ..\Template.Api migrations add InitialCreate
+    // dotnet ef --startup-project ..\Template.Api migrations add InitialCreate --context TemplateContext
 
     // remove migration
-    // dotnet ef --startup-project ..\Template.Api migrations remove
+    // dotnet ef --startup-project ..\Template.Api migrations remove --context TemplateContext
 
     // update database
-    // dotnet ef --startup-project ..\Template.Api database update
+    // dotnet ef --startup-project ..\Template.Api database update --context TemplateContext
 
     /// <summary>
     /// Primary DB
@@ -40,28 +40,18 @@ namespace Template.Data
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (_settingsHolder.SqlSettings.PrimaryDb.Enabled)
-            {
-                if (_settingsHolder.SqlSettings.PrimaryDb.Mssql)
-                {
-                    optionsBuilder.UseSqlServer(_settingsHolder.SqlSettings.PrimaryDb.ConnectionString);
-                    return;
-                }
-                
-                optionsBuilder.UseNpgsql(_settingsHolder.SqlSettings.PrimaryDb.ConnectionString);
-                return;
-            }
+            var dbOptions = _settingsHolder.SqlSettings.GetPrimary();
             
-            if (_settingsHolder.SqlSettings.SecondaryDb.Enabled)
+            switch (dbOptions.DbType)
             {
-                if (_settingsHolder.SqlSettings.SecondaryDb.Mssql)
-                {
-                    optionsBuilder.UseSqlServer(_settingsHolder.SqlSettings.SecondaryDb.ConnectionString);
-                    return;
-                }
-                
-                optionsBuilder.UseNpgsql(_settingsHolder.SqlSettings.SecondaryDb.ConnectionString);
-                return;
+                case DbTypes.Mssql:
+                    optionsBuilder.UseSqlServer(dbOptions.ConnectionString);
+                    break;
+                case DbTypes.Npgsql:
+                    optionsBuilder.UseNpgsql(dbOptions.ConnectionString);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

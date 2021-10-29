@@ -27,9 +27,9 @@ namespace Template.Caching
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var cacheSettings = context.HttpContext.RequestServices.GetRequiredService<CacheSettings>();
+            var settingsHolder = context.HttpContext.RequestServices.GetRequiredService<SettingsHolder>();
 
-            if (!cacheSettings.Enabled)
+            if (!settingsHolder.MyServices.Cache)
             {
                 await next();
                 return;

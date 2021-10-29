@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Threading.Tasks;
 using AspNetCoreRateLimit;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
@@ -12,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Template.Api.Hubs;
-using Template.HealthChecks;
+using Template.Common.SettingsConfigurationFiles;
 using Template.HealthChecks.HealthCheckResponseModels;
 using Template.Middleware;
 using Template.Service;
@@ -27,8 +26,7 @@ namespace Template.Api
         }
 
         private IConfiguration Configuration { get; }
-
-
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -36,7 +34,7 @@ namespace Template.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider, IIdentityService identityService)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider, IIdentityService identityService, SettingsHolder settingsHolder)
         {
             app.UseHealthChecks("/health", new HealthCheckOptions
             {
@@ -61,7 +59,9 @@ namespace Template.Api
                 }
             });
             
-            app.UseClientRateLimiting();
+            if(settingsHolder.MyServices.ApiRateLimit)
+                app.UseClientRateLimiting();
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
