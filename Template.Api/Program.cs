@@ -24,17 +24,9 @@ namespace Template.Api
             {
                 var messagingContext = serviceScope.ServiceProvider.GetRequiredService<MessagingContext>();
                 messagingContext.Database.EnsureCreated();
-                
+
                 var templateContext = serviceScope.ServiceProvider.GetRequiredService<TemplateContext>();
                 templateContext.Database.EnsureCreated();
-
-                messagingContext.Messages.Add(new Message()
-                {
-                    Text = "init",
-                    Id = new Guid(),
-                    UserId = new Guid()
-                });
-                messagingContext.SaveChanges();
 
                 // auto migration on start
                 // dbContext.Database.Migrate();

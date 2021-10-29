@@ -61,4 +61,10 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Hubs\MessagingHubHelper.cs">
+        <DependentUpon>MessagingHub.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

@@ -53,6 +53,9 @@
       <Compile Update="ConfigureRateLimitServicesExtensions.cs">
         <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
       </Compile>
+      <Compile Update="ConfigureSignalRServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

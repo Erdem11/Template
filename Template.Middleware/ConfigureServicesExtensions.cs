@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 using Template.Common.SettingsConfigurationFiles;
 using Template.HealthChecks;
 
@@ -28,18 +31,14 @@ namespace Template.Middleware
             ConfigureHangfireServicesExtensions.Configure(services, settings);
             ConfigureRateLimitServicesExtensions.Configure(services, settings);
 
-            
-            services.AddSignalR().AddStackExchangeRedis(settings.RedisSettings.ConnectionString, options => {
-                options.Configuration.ChannelPrefix = "Template";
-            });
-            
+            ConfigureSignalRServicesExtensions.Configure(services, settings);
+
             services.AddHealthChecks()
                 .AddCheck<RedisHealthCheck>("redis")
                 .AddCheck<DbContextHealthCheck>("database");
 
             return settings;
         }
-
 
         private static SettingsHolder LoadSettings(IServiceCollection services, IConfiguration configuration)
         {
