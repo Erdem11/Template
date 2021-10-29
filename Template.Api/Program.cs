@@ -22,8 +22,20 @@ namespace Template.Api
 
             using (var serviceScope = host.Services.CreateScope())
             {
+                var messagingContext = serviceScope.ServiceProvider.GetRequiredService<MessagingContext>();
+                messagingContext.Database.EnsureCreated();
+                
                 var templateContext = serviceScope.ServiceProvider.GetRequiredService<TemplateContext>();
                 templateContext.Database.EnsureCreated();
+
+                messagingContext.Messages.Add(new Message()
+                {
+                    Text = "init",
+                    Id = new Guid(),
+                    UserId = new Guid()
+                });
+                messagingContext.SaveChanges();
+
                 // auto migration on start
                 // dbContext.Database.Migrate();
 
@@ -76,7 +88,7 @@ namespace Template.Api
                     LoadAppsettingsFiles(webBuilder);
                 });
         }
-        
+
         private static void ConfigureSerilog(LoggerConfiguration configuration, HostBuilderContext context)
         {
             configuration.Enrich.FromLogContext()

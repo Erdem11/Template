@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Template.Api.Hubs;
 using Template.HealthChecks;
 using Template.HealthChecks.HealthCheckResponseModels;
 using Template.Middleware;
@@ -82,6 +83,11 @@ namespace Template.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
+            
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<MessagingHub>("/MessagingHub");
+            });
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();

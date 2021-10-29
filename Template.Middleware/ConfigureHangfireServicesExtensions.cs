@@ -11,24 +11,36 @@ namespace Template.Middleware
 {
     public static class ConfigureHangfireServicesExtensions
     {
-        public static void Configure(this IServiceCollection services, SettingsHolder settings)
+        public static void Configure(this IServiceCollection services, SettingsHolder settingsHolder)
         {
-            if (settings.RedisSettings.Enabled)
+            if (settingsHolder.RedisSettings.Enabled)
             {
-                services.AddHangfire(x => x.UseRedisStorage(settings.RedisSettings.ConnectionString));
+                services.AddHangfire(x => x.UseRedisStorage(settingsHolder.RedisSettings.ConnectionString));
                 services.AddHangfireServer();
                 return;
             }
-            
-            if (settings.SqlSettings.Mssql)
+
+            if (settingsHolder.SqlSettings.SecondaryDb.Enabled)
             {
-                services.AddHangfire(x => x.UseSqlServerStorage(settings.SqlSettings.MssqlConnectionString));
+                if (settingsHolder.SqlSettings.SecondaryDb.Mssql)
+                {
+                    services.AddHangfire(x => x.UseSqlServerStorage(settingsHolder.SqlSettings.SecondaryDb.ConnectionString));
+                    return;
+                }
+
+                services.AddHangfire(x => x.UsePostgreSqlStorage(settingsHolder.SqlSettings.SecondaryDb.ConnectionString));
                 return;
             }
-
-            if (settings.SqlSettings.Npgsql)
+            
+            if (settingsHolder.SqlSettings.PrimaryDb.Enabled)
             {
-                services.AddHangfire(x => x.UsePostgreSqlStorage(settings.SqlSettings.MssqlConnectionString));
+                if (settingsHolder.SqlSettings.PrimaryDb.Mssql)
+                {
+                    services.AddHangfire(x => x.UseSqlServerStorage(settingsHolder.SqlSettings.PrimaryDb.ConnectionString));
+                    return;
+                }
+
+                services.AddHangfire(x => x.UsePostgreSqlStorage(settingsHolder.SqlSettings.PrimaryDb.ConnectionString));
                 return;
             }
 

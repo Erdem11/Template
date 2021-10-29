@@ -26,6 +26,9 @@ namespace Template.Data
     // update database
     // dotnet ef --startup-project ..\Template.Api database update
 
+    /// <summary>
+    /// Primary DB
+    /// </summary>
     public class TemplateContext : IdentityDbContext<User, Role, MyKey, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
     {
         private readonly SettingsHolder _settingsHolder;
@@ -34,17 +37,30 @@ namespace Template.Data
         {
             _settingsHolder = settingsHolder;
         }
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (_settingsHolder.SqlSettings.Mssql)
+            if (_settingsHolder.SqlSettings.PrimaryDb.Enabled)
             {
-                optionsBuilder.UseNpgsql(_settingsHolder.SqlSettings.MssqlConnectionString);
+                if (_settingsHolder.SqlSettings.PrimaryDb.Mssql)
+                {
+                    optionsBuilder.UseSqlServer(_settingsHolder.SqlSettings.PrimaryDb.ConnectionString);
+                    return;
+                }
+                
+                optionsBuilder.UseNpgsql(_settingsHolder.SqlSettings.PrimaryDb.ConnectionString);
                 return;
             }
-
-            if (_settingsHolder.SqlSettings.Npgsql)
+            
+            if (_settingsHolder.SqlSettings.SecondaryDb.Enabled)
             {
-                optionsBuilder.UseNpgsql(_settingsHolder.SqlSettings.NpgsqlConnectionString);
+                if (_settingsHolder.SqlSettings.SecondaryDb.Mssql)
+                {
+                    optionsBuilder.UseSqlServer(_settingsHolder.SqlSettings.SecondaryDb.ConnectionString);
+                    return;
+                }
+                
+                optionsBuilder.UseNpgsql(_settingsHolder.SqlSettings.SecondaryDb.ConnectionString);
                 return;
             }
         }

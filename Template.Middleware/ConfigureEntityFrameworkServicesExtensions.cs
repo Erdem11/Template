@@ -9,20 +9,65 @@ namespace Template.Middleware
     {
         public static void Configure(this IServiceCollection services, SettingsHolder settingsHolder)
         {
-            // add EntityFramework
+            // primary db configuration
             services.AddDbContext<TemplateContext>(options => {
-                if (settingsHolder.SqlSettings.Mssql)
+                if (settingsHolder.SqlSettings.PrimaryDb.Enabled)
                 {
-                    options.UseSqlServer(settingsHolder.SqlSettings.MssqlConnectionString,
+                    if (settingsHolder.SqlSettings.PrimaryDb.Mssql)
+                    {
+                        options.UseSqlServer(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
+                        b => b.MigrationsAssembly("Template.Data"));
+                        return;
+                    }
+
+                    options.UseNpgsql(settingsHolder.SqlSettings.PrimaryDb.ConnectionString,
                     b => b.MigrationsAssembly("Template.Data"));
+                }
+                
+                if (settingsHolder.SqlSettings.SecondaryDb.Enabled)
+                {
+                    if (settingsHolder.SqlSettings.SecondaryDb.Mssql)
+                    {
+                        options.UseSqlServer(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
+                        b => b.MigrationsAssembly("Template.Data"));
+                        return;
+                    }
+
+                    options.UseNpgsql(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
+                    b => b.MigrationsAssembly("Template.Data"));
+                    
                     return;
                 }
-
-                if (settingsHolder.SqlSettings.Npgsql)
+            });
+            
+            // secondary db configuration
+            services.AddDbContext<MessagingContext>(options => {
+                if (settingsHolder.SqlSettings.SecondaryDb.Enabled)
                 {
-                    options.UseNpgsql(settingsHolder.SqlSettings.NpgsqlConnectionString,
+                    if (settingsHolder.SqlSettings.SecondaryDb.Mssql)
+                    {
+                        options.UseSqlServer(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
+                        b => b.MigrationsAssembly("Template.Data"));
+                        return;
+                    }
+
+                    options.UseNpgsql(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
                     b => b.MigrationsAssembly("Template.Data"));
+                    
                     return;
+                }
+                
+                if (settingsHolder.SqlSettings.PrimaryDb.Enabled)
+                {
+                    if (settingsHolder.SqlSettings.PrimaryDb.Mssql)
+                    {
+                        options.UseSqlServer(settingsHolder.SqlSettings.SecondaryDb.ConnectionString,
+                        b => b.MigrationsAssembly("Template.Data"));
+                        return;
+                    }
+
+                    options.UseNpgsql(settingsHolder.SqlSettings.PrimaryDb.ConnectionString,
+                    b => b.MigrationsAssembly("Template.Data"));
                 }
             });
         }

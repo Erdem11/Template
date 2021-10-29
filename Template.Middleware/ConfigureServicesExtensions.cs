@@ -28,6 +28,11 @@ namespace Template.Middleware
             ConfigureHangfireServicesExtensions.Configure(services, settings);
             ConfigureRateLimitServicesExtensions.Configure(services, settings);
 
+            
+            services.AddSignalR().AddStackExchangeRedis(settings.RedisSettings.ConnectionString, options => {
+                options.Configuration.ChannelPrefix = "Template";
+            });
+            
             services.AddHealthChecks()
                 .AddCheck<RedisHealthCheck>("redis")
                 .AddCheck<DbContextHealthCheck>("database");
