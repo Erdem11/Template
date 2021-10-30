@@ -14,7 +14,6 @@ namespace Template.Api.Hubs
         {
             _connectionMultiplexer = connectionMultiplexer;
             _messagingContext = messagingContext;
-
         }
 
         public async Task AddMessageToDb(Guid userId, string message)

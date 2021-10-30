@@ -2,9 +2,6 @@
 using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.AspNetCore.SignalR;
-using StackExchange.Redis;
-using Template.Common.SettingsConfigurationFiles;
-using Template.Data;
 
 namespace Template.Api.Hubs
 {
@@ -15,17 +12,6 @@ namespace Template.Api.Hubs
 
     public class MessagingHub : Hub<IMessagingHub>
     {
-        private readonly IConnectionMultiplexer _connectionMultiplexer;
-        private readonly SettingsHolder _settingsHolder;
-        private readonly MessagingContext _messagingContext;
-
-        public MessagingHub(IConnectionMultiplexer connectionMultiplexer, SettingsHolder settingsHolder, MessagingContext messagingContext)
-        {
-            _connectionMultiplexer = connectionMultiplexer;
-            _settingsHolder = settingsHolder;
-            _messagingContext = messagingContext;
-        }
-
         public override Task OnConnectedAsync()
         {
             var user = new HubUser();
@@ -63,5 +49,4 @@ namespace Template.Api.Hubs
         public string ConnectionId { get; set; }
         public string UserName { get; set; }
     }
-
 }
