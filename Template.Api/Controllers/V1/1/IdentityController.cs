@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Template.Common;
 using Template.Contracts.V1;
 using Template.Contracts.V1.Identity.Requests;
 using Template.Contracts.V1.Identity.Responses;

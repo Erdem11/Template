@@ -99,8 +99,8 @@ namespace Template.Data
                     {
                         if (property.Name == "SourceId")
                         {
-                            var source = property.GetValue("Source");
-                            var sourceId = source.GetType().GetProperty("Id").GetValue(source);
+                            var source = entity.GetType().GetProperty("Source").GetValue(entity) as ILocalizable;
+                            var sourceId = source.Id;
                             property.SetValue(entity, sourceId);
                             continue;
                         }

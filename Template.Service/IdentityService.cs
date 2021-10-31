@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Template.Common;
 using Template.Common.SettingsConfigurationFiles;
 using Template.Common.Structs;
 using Template.Data;
@@ -103,7 +104,7 @@ namespace Template.Service
         public void AddUserClaim(MyKey userId, string claimName)
         {
             var user = _userManager.FindByIdAsync(userId.ToString()).Result;
-            _userManager.AddClaimAsync(user, new Claim(claimName, "true")).Wait();
+            _userManager.AddClaimAsync(user, new Claim(nameof(TokenModel.CustomClaims), claimName)).Wait();
             _templateContext.SaveChanges();
         }
 

@@ -2,7 +2,7 @@
 
 namespace Template.Domain.Dto.Abstract
 {
-    public interface ILocalizable
+    public interface ILocalizable : IMyKey
     {
     }
     

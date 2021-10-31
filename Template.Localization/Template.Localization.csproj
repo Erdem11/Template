@@ -6,11 +6,15 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Template.Common\Template.Common.csproj" />
-      <ProjectReference Include="..\Template.Localization\Template.Localization.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="V1\_Validators\BookRequestValidators" />
+      <Compile Update="LocalizationStringsEn.cs">
+        <DependentUpon>LocalizationStrings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LocalizationStringsTr.cs">
+        <DependentUpon>LocalizationStrings.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

@@ -1,11 +1,8 @@
-﻿using System;
-using System.ComponentModel;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Template.Caching;
-using Template.Caching.RedisCaching;
 using Template.Common;
 using Template.Common.Structs;
 using Template.Contracts.V1;
@@ -46,7 +43,7 @@ namespace Template.Api.Controllers.V1._0
 
             book.AddedUserId = HttpContext.GetUserId().GetValueOrDefault();
             _bookService.Add(book);
-
+ 
             return Created(book.Id.ToString(), book.Id);
         }
 

@@ -1,6 +1,4 @@
 using System;
-using System.Configuration;
-using System.IO;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -62,19 +60,24 @@ namespace Template.Api
                 Name = RoleConstants.Admin,
             };
             roleManager.CreateAsync(adminRole).Wait();
+            var editorRole = new Role
+            {
+                Name = RoleConstants.Editor,
+            };
+            roleManager.CreateAsync(editorRole).Wait();
 
             adminRole = roleManager.FindByNameAsync(RoleConstants.Admin).Result;
 
             userManager.AddToRoleAsync(admin, RoleConstants.Admin).Wait();
+            userManager.AddToRoleAsync(admin, RoleConstants.Editor).Wait();
 
-            roleManager.AddClaimAsync(adminRole, new Claim(ClaimTypes.Role, "Admin")).Wait();
-            roleManager.AddClaimAsync(adminRole, new Claim(ClaimConstants.Hangfire, true.ToString())).Wait();
+            roleManager.AddClaimAsync(adminRole, new Claim(ClaimTypes.Role, RoleConstants.Admin)).Wait();
+            roleManager.AddClaimAsync(adminRole, new Claim(ClaimTypes.Role, RoleConstants.Editor)).Wait();
+            roleManager.AddClaimAsync(adminRole, new Claim(nameof(TokenModel.CustomClaims), ClaimConstants.Hangfire)).Wait();
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
-            var a = Host.CreateDefaultBuilder(args);
-
             return Host.CreateDefaultBuilder(args)
                 .UseSerilog((context, configuration) => {
                     ConfigureSerilog(configuration, context);
@@ -85,12 +88,6 @@ namespace Template.Api
                     LoadAppsettingsFiles(webBuilder);
                 });
         }
-
-        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
-            .Build();
 
         private static void ConfigureSerilog(LoggerConfiguration configuration, HostBuilderContext context)
         {
