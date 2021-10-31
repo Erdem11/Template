@@ -23,7 +23,7 @@ namespace Template.Api.Hubs
             return base.OnConnectedAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception? exception)
+        public override Task OnDisconnectedAsync(Exception exception)
         {
             BackgroundJob.Enqueue<MessagingHubHelper>((x) => x.RemoveFromRedis(Context.ConnectionId));
 

@@ -1,8 +1,10 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Template.Common.Structs;
+using Template.Common.Types;
 using Template.Data;
 using Template.Domain.Dto.Abstract;
+using Template.Localization;
 
 namespace Template.Service
 {

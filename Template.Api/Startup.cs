@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using Template.Api.Hubs;
 using Template.Common;
 using Template.Common.SettingsConfigurationFiles;
+using Template.Common.Structs;
 using Template.Contracts;
 using Template.Contracts.V1.Books.Requests;
 using Template.HealthChecks.HealthCheckResponseModels;
@@ -52,6 +53,8 @@ namespace Template.Api
                 options.SuppressModelStateInvalidFilter = true;
             });
             services.AddTransient<IValidatorInterceptor, ValidatorInterceptor>();
+
+            services.AddScoped<LocalizationInfo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,6 +83,7 @@ namespace Template.Api
                 }
             });
 
+            app.UseMiddleware<ResolveTokenModel>();
             if (settingsHolder.MyServices.ApiRateLimit)
                 app.UseClientRateLimiting();
 
@@ -104,7 +108,6 @@ namespace Template.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseMiddleware<ResolveTokenModel>();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapHub<MessagingHub>("/MessagingHub");

@@ -10,8 +10,6 @@ using Template.Service;
 
 namespace Template.Api.Controllers.V1._0
 {
-    [ApiController]
-    [Route("[controller]/[action]")]
     [ApiVersion("1.0")]
     [ApiVersion("1.1")]
     public class IdentityController : TemplateControllerBase

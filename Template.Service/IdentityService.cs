@@ -10,10 +10,13 @@ using Microsoft.IdentityModel.Tokens;
 using Template.Common;
 using Template.Common.SettingsConfigurationFiles;
 using Template.Common.Structs;
+using Template.Common.Types;
 using Template.Data;
 using Template.Domain.Dto;
+using Template.Domain.Dto.Abstract;
 using Template.Domain.Dto.IdentityModels;
 using Template.Domain.Identity;
+using Template.Localization;
 
 namespace Template.Service
 {
@@ -28,21 +31,23 @@ namespace Template.Service
         ClaimsPrincipal GetPrincipalFromToken(string token);
     }
 
-    public class IdentityService : IIdentityService
+    public class IdentityService : ServiceBase<IEntityBase>, IIdentityService
     {
         private readonly TemplateContext _templateContext;
+        private readonly LocalizationInfo _localizationInfo;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
         private readonly SettingsHolder _settingsHolder;
 
-        public IdentityService(UserManager<User> userManager, RoleManager<Role> roleManager, SettingsHolder settingsHolder, TokenValidationParameters tokenValidationParameters, TemplateContext templateContext)
+        public IdentityService(UserManager<User> userManager, RoleManager<Role> roleManager, SettingsHolder settingsHolder, TokenValidationParameters tokenValidationParameters, TemplateContext templateContext, LocalizationInfo localizationInfo) : base(templateContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _settingsHolder = settingsHolder;
             _tokenValidationParameters = tokenValidationParameters;
             _templateContext = templateContext;
+            _localizationInfo = localizationInfo;
         }
 
         public AuthResult Register(string email, string password)
@@ -73,14 +78,14 @@ namespace Template.Service
             if (user == default)
                 return new AuthResult
                 {
-                    Error = "User does not exist"
+                    Error = Localizer.Localize(x => x.ErrorUserNotExist, _localizationInfo.Language)
                 };
             var isPasswordValid = _userManager.CheckPasswordAsync(user, password).Result;
 
             if (!isPasswordValid)
                 return new AuthResult
                 {
-                    Error = "User/password combination is wrong"
+                    Error = Localizer.Localize(x => x.ErrorWrongUserNamePassword, _localizationInfo.Language)
                 };
 
             return GenerateAuthenticationResultForUser(user);

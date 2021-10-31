@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
+using Template.Common;
 using Template.Common.SettingsConfigurationFiles;
 
 namespace Template.Middleware
@@ -19,7 +20,7 @@ namespace Template.Middleware
             {
                 return;
             }
-            
+
             services.AddOptions();
 
             _ = settings.MyServices.Redis ? ConfigureRedis(services, settings) : ConfigureInMemory(services, settings);
@@ -35,7 +36,7 @@ namespace Template.Middleware
 
             services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(settings.RedisSettings.ConnectionString));
             services.AddRedisRateLimiting();
-            
+
             return true;
         }
 
@@ -75,9 +76,11 @@ namespace Template.Middleware
     {
         public Task<string> ResolveClientAsync(HttpContext httpContext)
         {
-            var token = httpContext.Request.Headers["Authorization"].FirstOrDefault();
+            var tokenModel = httpContext.GetTokenModel();
 
-            var result = token ?? httpContext.Connection.RemoteIpAddress?.ToString();
+            var result = tokenModel != default
+                ? tokenModel.Id.ToString()
+                : httpContext.Connection.RemoteIpAddress?.ToString();
 
             return Task.FromResult(result);
         }

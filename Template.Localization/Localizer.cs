@@ -12,8 +12,10 @@ namespace Template.Localization
         }
 
         public static string Localize(Expression<Func<LocalizationStrings, string>> localizable, Languages language, params string[] alternatives)
-        {
-            var result = LocalizationResult(localizable.Name, language, alternatives);
+        { 
+            var expression = (MemberExpression)localizable.Body;
+            
+            var result = LocalizationResult(expression.Member.Name, language, alternatives);
 
             return result;
         }

@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Template.Common.Structs;
 using Template.Common.Types;
 
 namespace Template.Common
 {
+    [ApiController]
+    [Route("[controller]/[action]")]
+    [TypeFilter(typeof(TemplateControllerBaseAttribute))]
     public class TemplateControllerBase : Controller
     {
         private Guid? _contextUserId;
-        protected Guid ContextUserId => _contextUserId ??= (Guid)HttpContext.GetUserId().GetValueOrDefault();
+        protected Guid ContextUserId => _contextUserId ??= HttpContext.GetUserId().GetValueOrDefault();
 
         private bool? _isAccessTokenExist;
         private string _accessToken;
@@ -74,5 +79,20 @@ namespace Template.Common
         }
 
         protected Task<string> AccessTokenTask() => Task.FromResult(AccessToken);
+    }
+
+    public class TemplateControllerBaseAttribute : ActionFilterAttribute
+    {
+        private readonly LocalizationInfo _localizationInfo;
+   
+        public TemplateControllerBaseAttribute(LocalizationInfo localizationInfo)
+        {
+            _localizationInfo = localizationInfo;
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            _localizationInfo.Language = context.HttpContext.GetLanguage();
+        }
     }
 }
