@@ -5,7 +5,7 @@ using Template.Domain.Dto.Abstract;
 
 namespace Template.Domain.Dto.IdentityModels
 {
-    public class User : IdentityUser<MyKey>, ICreatedAt
+    public class User : IdentityUser<Guid>, ICreatedAt
     {
         public DateTime CreatedAt { get; set; }
     }

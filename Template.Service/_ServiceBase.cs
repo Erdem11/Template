@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Template.Common.Structs;
 using Template.Data;
 using Template.Domain.Dto.Abstract;
@@ -10,7 +11,7 @@ namespace Template.Service
         public T Add(T entity);
         public T Update(T entity);
         public T Delete(T entity);
-        public T Get(MyKey id);
+        public T Get(Guid id);
     }
 
     public abstract class ServiceBase<T> : IServiceBase<T> where T : class, IEntityBase
@@ -47,7 +48,7 @@ namespace Template.Service
             return entity;
         }
 
-        public T Get(MyKey id)
+        public T Get(Guid id)
         {
             var result = Context.Set<T>().Find(id);
 

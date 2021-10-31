@@ -5,9 +5,9 @@ using Template.Domain.Dto.Abstract;
 
 namespace Template.Domain.Dto.IdentityModels
 {
-    public class UserLogin : IdentityUserLogin<MyKey>, IEntityBase
+    public class UserLogin : IdentityUserLogin<Guid>, IEntityBase
     {
-        public MyKey Id { get; set; }
+        public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

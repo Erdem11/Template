@@ -44,7 +44,7 @@ namespace Template.Api.Controllers.V1._0
 
             var tag = _tagService.Add(tagLanguages, ContextUserId);
 
-            return Created(tag.Id.ToString(), new IdResponse(tag.Id.ToPrimitive()));
+            return Created(tag.Id.ToString(), new IdResponse(tag.Id));
         }
 
         [HttpGet]

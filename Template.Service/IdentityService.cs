@@ -20,10 +20,10 @@ namespace Template.Service
     public interface IIdentityService
     {
         AuthResult Register(string email, string password);
-        void AddUserClaim(MyKey userId, string claimName);
+        void AddUserClaim(Guid userId, string claimName);
         AuthResult Login(string email, string password);
         AuthResult RefreshToken(string token, Guid refreshToken);
-        void AddUserRole(MyKey userId, string role);
+        void AddUserRole(Guid userId, string role);
         void AddRole(string role);
         ClaimsPrincipal GetPrincipalFromToken(string token);
     }
@@ -94,14 +94,14 @@ namespace Template.Service
             }).Wait();
         }
 
-        public void AddUserRole(MyKey userId, string role)
+        public void AddUserRole(Guid userId, string role)
         {
             var user = _templateContext.Users.Find(userId);
 
             _userManager.AddToRoleAsync(user, role).Wait();
         }
 
-        public void AddUserClaim(MyKey userId, string claimName)
+        public void AddUserClaim(Guid userId, string claimName)
         {
             var user = _userManager.FindByIdAsync(userId.ToString()).Result;
             _userManager.AddClaimAsync(user, new Claim(nameof(TokenModel.CustomClaims), claimName)).Wait();
@@ -233,7 +233,7 @@ namespace Template.Service
             {
                 Token = tokenString,
                 TokenExpireDate = tokenDescriptor.Expires.GetValueOrDefault(),
-                RefreshToken = refreshToken.Id.ToPrimitive()
+                RefreshToken = refreshToken.Id
             };
         }
 

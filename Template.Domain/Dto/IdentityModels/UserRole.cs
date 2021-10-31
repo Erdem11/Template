@@ -5,7 +5,7 @@ using Template.Domain.Dto.Abstract;
 
 namespace Template.Domain.Dto.IdentityModels
 {
-    public class UserRole : IdentityUserRole<MyKey>, ICreatedAt
+    public class UserRole : IdentityUserRole<Guid>, ICreatedAt
     {
         public DateTime CreatedAt { get; set; }
         public virtual User User { get; set; }

@@ -1,20 +1,20 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Template.Common.Structs;
 using Template.Common.Types;
 
 namespace Template.Common
 {
     public static class HttpContextExtensions
     {
-        public static MyKey? GetUserId(this HttpContext httpContext)
+        public static Guid? GetUserId(this HttpContext httpContext)
         {
             if (httpContext?.User == default)
                 return default;
 
             var idString = httpContext.User.Claims.Single(x => x.Type == "id").Value;
-
-            return MyKey.Parse(idString);
+            _ = Guid.TryParse(idString, out var id);
+            return id;
         }
 
         public static string GetToken(this HttpContext httpContext)

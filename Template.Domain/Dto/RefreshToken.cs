@@ -12,6 +12,6 @@ namespace Template.Domain.Dto
         public bool Used { get; set; }
         public bool Invalidated { get; set; }
         public User User { get; set; }
-        public MyKey UserId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

@@ -10,8 +10,8 @@ namespace Template.Domain.Dto
     {
         public DateTime PublishDate { get; set; }
 
-        public MyKey AuthorId { get; set; }
-        public MyKey AddedUserId { get; set; }
+        public Guid AuthorId { get; set; }
+        public Guid AddedUserId { get; set; }
 
         public virtual Author Author { get; set; }
         public virtual User AddedUser { get; set; }

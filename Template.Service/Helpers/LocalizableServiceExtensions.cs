@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Template.Common.Structs;
 using Template.Common.Types;
@@ -8,7 +9,7 @@ namespace Template.Service.Helpers
 {
     public static class LocalizableServiceExtensions
     {
-        public static TLocalizable GetWitLanguage<TLocalizable, TLanguage>(this ServiceBase<TLocalizable> service, MyKey id)
+        public static TLocalizable GetWitLanguage<TLocalizable, TLanguage>(this ServiceBase<TLocalizable> service, Guid id)
             where TLanguage : class, IEntityBase, ILanguage<TLocalizable>
             where TLocalizable : class, IEntityBase, ILocalizable<TLocalizable, TLanguage>
         {
@@ -18,7 +19,7 @@ namespace Template.Service.Helpers
 
             return result;
         }
-        public static TLocalizable GetWitLanguage<TLocalizable, TLanguage>(this ServiceBase<TLocalizable> service, MyKey id, Languages language)
+        public static TLocalizable GetWitLanguage<TLocalizable, TLanguage>(this ServiceBase<TLocalizable> service, Guid id, Languages language)
             where TLanguage : class, IEntityBase, ILanguage<TLocalizable>
             where TLocalizable : class, IEntityBase, ILocalizable<TLocalizable, TLanguage>
         {

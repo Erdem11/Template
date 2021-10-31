@@ -5,7 +5,7 @@ using Template.Domain.Dto.Abstract;
 
 namespace Template.Domain.Dto.IdentityModels
 {
-    public class RoleClaim : IdentityRoleClaim<MyKey>, ICreatedAt
+    public class RoleClaim : IdentityRoleClaim<Guid>, ICreatedAt
     {
         public DateTime CreatedAt { get; set; }
     }

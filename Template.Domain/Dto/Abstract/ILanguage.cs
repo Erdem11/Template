@@ -1,11 +1,12 @@
-﻿using Template.Common.Structs;
+﻿using System;
+using Template.Common.Structs;
 using Template.Common.Types;
 
 namespace Template.Domain.Dto.Abstract
 {
     public interface ILanguage
     {
-        public MyKey SourceId { get; set; }
+        public Guid SourceId { get; set; }
         public Languages Language { get; set; }
     }
     
