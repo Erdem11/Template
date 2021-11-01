@@ -52,15 +52,10 @@ namespace Template.Middleware
         }
 
         public bool Authorize(DashboardContext context)
-        {
-            var httpContext = context.GetHttpContext();
-
-            var token = httpContext.GetToken();
-
-            var principalsToken = _identityService.GetPrincipalFromToken(token);
-
-            var canSeeHangfireValue = principalsToken?.Claims.FirstOrDefault(x => x.Type == ClaimConstants.Hangfire)?.Value;
-            return bool.TryParse(canSeeHangfireValue, out var canSeeHangfire) && canSeeHangfire;
+        { 
+            var tokenModel = context.GetHttpContext().GetTokenModel();
+       
+            return tokenModel.CustomClaims.Contains(ClaimConstants.Hangfire);
         }
     }
 }
