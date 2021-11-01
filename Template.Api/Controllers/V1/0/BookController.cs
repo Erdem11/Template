@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,13 +38,13 @@ namespace Template.Api.Controllers.V1._0
         [MapToApiVersion("1.0")]
         [ProducesResponseType(typeof(Response<GuidResponse>), 201)]
         [ProducesResponseType(typeof(ErrorResponse), 400)]
-        public IActionResult Add(AddBookRequest request)
+        public async Task<IActionResult> Add(AddBookRequest request)
         {
             var book = _mapper.Map<Book>(request);
 
             book.AddedUserId = HttpContext.GetUserId().GetValueOrDefault();
-            _bookService.Add(book);
- 
+            await _bookService.AddAsync(book);
+
             return Created(book.Id.ToString(), book.Id);
         }
 
@@ -52,11 +53,11 @@ namespace Template.Api.Controllers.V1._0
         [MapToApiVersion("1.0")]
         [ProducesResponseType(typeof(Response<BookResponse>), 201)]
         [ProducesResponseType(typeof(ErrorResponse), 400)]
-        public IActionResult GetAll([FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery query)
         {
             var paginationFilter = _mapper.Map<PaginationFilter>(query);
 
-            var books = _bookService.GetNewBooks(10, paginationFilter);
+            var books = await _bookService.GetNewBooksAsync(10, paginationFilter);
 
             return Ok(books);
         }

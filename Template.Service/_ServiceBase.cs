@@ -1,19 +1,17 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Template.Common.Structs;
-using Template.Common.Types;
 using Template.Data;
 using Template.Domain.Dto.Abstract;
-using Template.Localization;
 
 namespace Template.Service
 {
     public interface IServiceBase<T> where T : class, IEntityBase
     {
-        public T Add(T entity);
-        public T Update(T entity);
-        public T Delete(T entity);
-        public T Get(Guid id);
+        public Task<T> AddAsync(T entity);
+        public Task<T> UpdateAsync(T entity);
+        public Task<T> DeleteAsync(T entity);
+        public Task<T> GetAsync(Guid id);
     }
 
     public abstract class ServiceBase<T> : IServiceBase<T> where T : class, IEntityBase
@@ -26,33 +24,33 @@ namespace Template.Service
         }
         protected DbSet<T> DbSet => _dbSet ??= Context.Set<T>();
 
-        public T Add(T entity)
+        public async Task<T> AddAsync(T entity)
         {
-            Context.Set<T>().Add(entity);
-            Context.SaveChanges();
+            await Context.Set<T>().AddAsync(entity);
+            await Context.SaveChangesAsync();
 
             return entity;
         }
 
-        public T Update(T entity)
+        public async Task<T> UpdateAsync(T entity)
         {
             Context.Entry(entity).State = EntityState.Modified;
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
 
             return entity;
         }
 
-        public T Delete(T entity)
+        public async Task<T> DeleteAsync(T entity)
         {
             Context.Set<T>().Remove(entity);
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
 
             return entity;
         }
 
-        public T Get(Guid id)
+        public async Task<T> GetAsync(Guid id)
         {
-            var result = Context.Set<T>().Find(id);
+            var result = await Context.Set<T>().FindAsync(id);
 
             return result;
         }
