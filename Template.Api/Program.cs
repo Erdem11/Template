@@ -159,6 +159,7 @@ namespace Template.Api
                     SchemaName = "serilog"
                 }),
                 DbTypes.Npgsql => loggerConfiguration.WriteTo.PostgreSQL(dbOptions.ConnectionString, "TemplateLogs", needAutoCreateTable: true),
+                DbTypes.Sqlite => loggerConfiguration.WriteTo.SQLite(dbOptions.ConnectionString, "TemplateLogs"),
                 _ => throw new ArgumentOutOfRangeException()
             };
         }

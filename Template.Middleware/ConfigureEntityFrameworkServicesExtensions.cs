@@ -24,6 +24,10 @@ namespace Template.Middleware
                         options.UseNpgsql(dbOptions.ConnectionString,
                         b => b.MigrationsAssembly("Template.Data"));
                         break;
+                    case DbTypes.Sqlite:
+                        options.UseSqlite(dbOptions.ConnectionString,
+                        b => b.MigrationsAssembly("Template.Data"));
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -41,6 +45,10 @@ namespace Template.Middleware
                         break;
                     case DbTypes.Npgsql:
                         options.UseNpgsql(dbOptions.ConnectionString,
+                        b => b.MigrationsAssembly("Template.Data"));
+                        break;
+                    case DbTypes.Sqlite:
+                        options.UseSqlite(dbOptions.ConnectionString,
                         b => b.MigrationsAssembly("Template.Data"));
                         break;
                     default:

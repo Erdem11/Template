@@ -10,12 +10,12 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Template.Common\Template.Common.csproj" />
       <ProjectReference Include="..\Template.Domain\Template.Domain.csproj" />
-      <ProjectReference Include="..\Template.Entities\Template.Entities.csproj" />
     </ItemGroup>
 
 </Project>

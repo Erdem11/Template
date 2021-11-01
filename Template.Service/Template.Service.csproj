@@ -8,7 +8,6 @@
     <ItemGroup>
       <ProjectReference Include="..\Template.Data\Template.Data.csproj" />
       <ProjectReference Include="..\Template.Domain\Template.Domain.csproj" />
-      <ProjectReference Include="..\Template.Entities\Template.Entities.csproj" />
       <ProjectReference Include="..\Template.Localization\Template.Localization.csproj" />
     </ItemGroup>
 

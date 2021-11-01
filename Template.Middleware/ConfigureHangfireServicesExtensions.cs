@@ -3,6 +3,7 @@ using System.Linq;
 using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
+using Hangfire.SQLite;
 using Microsoft.Extensions.DependencyInjection;
 using Template.Common;
 using Template.Common.SettingsConfigurationFiles;
@@ -29,6 +30,9 @@ namespace Template.Middleware
                     break;
                 case DbTypes.Npgsql:
                     services.AddHangfire(x => x.UsePostgreSqlStorage(dbOptions.ConnectionString));
+                    break;
+                case DbTypes.Sqlite:
+                    services.AddHangfire(x => x.UseSQLiteStorage(dbOptions.ConnectionString));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

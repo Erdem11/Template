@@ -29,6 +29,9 @@ namespace Template.Data
                 case DbTypes.Npgsql:
                     optionsBuilder.UseNpgsql(dbOptions.ConnectionString);
                     break;
+                case DbTypes.Sqlite:
+                    optionsBuilder.UseSqlite(dbOptions.ConnectionString);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

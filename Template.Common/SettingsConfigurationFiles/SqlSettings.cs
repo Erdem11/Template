@@ -25,5 +25,6 @@
     {
         Mssql = 1,
         Npgsql = 2,
+        Sqlite = 3,
     }
 }

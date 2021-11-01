@@ -10,7 +10,6 @@
       <ProjectReference Include="..\Template.Contracts\Template.Contracts.csproj" />
       <ProjectReference Include="..\Template.Data\Template.Data.csproj" />
       <ProjectReference Include="..\Template.Domain\Template.Domain.csproj" />
-      <ProjectReference Include="..\Template.Entities\Template.Entities.csproj" />
     </ItemGroup>
 
 </Project>
