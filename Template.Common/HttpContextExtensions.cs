@@ -19,7 +19,7 @@ namespace Template.Common
 
         public static string GetToken(this HttpContext httpContext)
         {
-            var possibleToken = httpContext.Request.Headers["Authorization"].ToString();
+            var possibleToken = httpContext.Request.Headers[HttpConstants.Authorization].ToString();
 
             return possibleToken.StartsWith("Bearer ") ? possibleToken["Bearer ".Length..] : default;
         }
@@ -36,7 +36,7 @@ namespace Template.Common
 
         public static Languages GetLanguage(this HttpContext httpContext)
         {
-            var possibleLanguageString = httpContext.Request.Headers["Accept-Language"].ToString();
+            var possibleLanguageString = httpContext.Request.Headers[HttpConstants.AcceptLanguage].ToString();
 
             return StringHelpers.AcceptLanguageToLanguage(possibleLanguageString);
         }

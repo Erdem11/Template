@@ -51,8 +51,7 @@ namespace Template.Middleware
         {
             var httpContext = context.GetHttpContext();
 
-            var token = httpContext.Request.Headers["Authorization"].FirstOrDefault(x => x.ToLower().Contains("bearer "));
-            token = token?.Replace("Bearer ", "");
+            var token = httpContext.GetToken();
 
             var principalsToken = _identityService.GetPrincipalFromToken(token);
 

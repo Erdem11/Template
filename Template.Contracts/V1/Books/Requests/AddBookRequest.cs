@@ -17,7 +17,7 @@ namespace Template.Contracts.V1.Books.Requests
         {
             RuleFor(x => x.PublishDate)
                 .NotEqual(default(DateTime?))
-                .WithName(x => nameof(x.PublishDate))
+                .WithName(x =>  nameof(x.PublishDate))
                 .NotNull();
 
             RuleFor(x => x.AuthorId)
