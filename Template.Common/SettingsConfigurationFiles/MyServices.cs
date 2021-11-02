@@ -6,5 +6,6 @@
         public bool ApiRateLimit { get; set; }
         public bool Cache { get; set; }
         public bool ElasticSearch { get; set; }
+        public string BaseUri { get; set; }
     }
 }

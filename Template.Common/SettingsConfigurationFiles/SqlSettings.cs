@@ -8,6 +8,9 @@
         // Additional data store
         public MyDbOptions SecondaryDb { get; set; }
 
+        // Additional data store
+        public MyDbOptions AlternateDb { get; set; }
+
         public class MyDbOptions
         {
             public bool Enabled { get; set; }
@@ -15,6 +18,8 @@
             public string ConnectionString { get; set; }
         }
 
+        public MyDbOptions GetAlternate() =>
+            AlternateDb.Enabled ? AlternateDb : GetSecondary();
         public MyDbOptions GetSecondary() =>
             SecondaryDb.Enabled ? SecondaryDb : PrimaryDb;
         public MyDbOptions GetPrimary() =>

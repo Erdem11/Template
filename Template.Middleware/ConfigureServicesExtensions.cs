@@ -1,13 +1,7 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using AspNetCoreRateLimit;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+﻿using AspNetCoreRateLimit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
 using Template.Common.SettingsConfigurationFiles;
-using Template.HealthChecks;
 
 namespace Template.Middleware
 {
@@ -30,12 +24,9 @@ namespace Template.Middleware
             ConfigureBackgroundTasksServicesExtensions.Configure(services, settings);
             ConfigureHangfireServicesExtensions.Configure(services, settings);
             ConfigureRateLimitServicesExtensions.Configure(services, settings);
-
             ConfigureSignalRServicesExtensions.Configure(services, settings);
-
-            services.AddHealthChecks()
-                .AddCheck<RedisHealthCheck>("redis")
-                .AddCheck<DbContextHealthCheck>("database");
+            ConfigureValidationServicesExtensions.Configure(services, settings);
+            ConfigureHealthCheckServicesExtensions.Configure(services, settings);
 
             return settings;
         }
@@ -59,5 +50,4 @@ namespace Template.Middleware
             return settings;
         }
     }
-
 }

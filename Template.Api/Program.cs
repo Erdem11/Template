@@ -91,7 +91,7 @@ namespace Template.Api
 
         private static void ConfigureSerilog(LoggerConfiguration configuration, HostBuilderContext context)
         {
-            var connectionString = NewMethod(new ConfigurationBuilder());
+            var connectionString = LoadSettingFiles(new ConfigurationBuilder());
             var settingsHolder = new SettingsHolder();
             connectionString.Bind(settingsHolder);
 
@@ -109,10 +109,10 @@ namespace Template.Api
                 configurationBuilder) => {
                 var env = webHostBuilderContext.HostingEnvironment;
                 configurationBuilder.SetBasePath(env.ContentRootPath);
-                NewMethod(configurationBuilder);
+                LoadSettingFiles(configurationBuilder);
             });
         }
-        private static IConfiguration NewMethod(IConfigurationBuilder configurationBuilder)
+        private static IConfiguration LoadSettingFiles(IConfigurationBuilder configurationBuilder)
         {
             var configurationNameList = new[]
             {
@@ -149,7 +149,7 @@ namespace Template.Api
                 });
             }
 
-            var dbOptions = settingsHolder.SqlSettings.GetSecondary();
+            var dbOptions = settingsHolder.SqlSettings.GetAlternate();
             return dbOptions.DbType switch
             {
                 DbTypes.Mssql => loggerConfiguration.WriteTo.MSSqlServer(dbOptions.ConnectionString, new MSSqlServerSinkOptions

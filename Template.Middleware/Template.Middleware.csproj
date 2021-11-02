@@ -55,6 +55,12 @@
       <Compile Update="ConfigureSignalRServicesExtensions.cs">
         <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
       </Compile>
+      <Compile Update="ConfigureHealthCheckServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ConfigureValidationServicesExtensions.cs">
+        <DependentUpon>ConfigureServicesExtensions.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>
