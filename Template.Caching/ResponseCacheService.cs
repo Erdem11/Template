@@ -26,12 +26,12 @@ namespace Template.Caching
             }
 
             var serializedResponse = JsonConvert.SerializeObject(response);
-            await _cacheService.SetCacheValueAsync(cacheKey, serializedResponse, timeToLive);
+            await _cacheService.SetAsync(cacheKey, serializedResponse, timeToLive);
         }
         
         public async Task<string> GetCachedResponseAsync(string cacheKey)
         {
-            var cachedResponse = await _cacheService.GetCacheValueAsync(cacheKey);
+            var cachedResponse = await _cacheService.GetAsync<string>(cacheKey);
             return string.IsNullOrWhiteSpace(cachedResponse) ? null : cachedResponse;
         }
     }
