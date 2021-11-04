@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Template.Common.Structs;
 using Template.Domain.Dto.Abstract;
 
 namespace Template.Service.Helpers
@@ -13,28 +14,65 @@ namespace Template.Service.Helpers
             return query.Where(x => !exclude || !x.IsDeleted);
         }
 
-        public static T SoftDelete<T>(this ServiceBase<T> service, T entity) where T : class, IEntityBase, ISoftDelete
+        public static async Task<T> SoftDeleteAsync<T>(this ServiceBase<T> service, T entity, bool saveChanges = false) where T : class, IEntityBase, ISoftDelete
         {
             entity.IsDeleted = true;
             entity.DeletedAt = DateTime.UtcNow;
 
             service.Context.Entry(entity).State = EntityState.Modified;
-            service.Context.SaveChanges();
+
+            if (saveChanges)
+                await service.Context.SaveChangesAsync();
 
             return entity;
         }
 
-        public static T SoftDelete<T>(this ServiceBase<T> service, Guid id) where T : class, IEntityBase, ISoftDelete
+        public static async Task<T> SoftDeleteAsync<T>(this ServiceBase<T> service, Guid id, bool saveChanges = false) where T : class, IEntityBase, ISoftDelete
         {
-            var entity = service.Context.Set<T>().Find(id);
+            var entity = await service.Context.Set<T>().FindAsync(id);
 
             entity.IsDeleted = true;
             entity.DeletedAt = DateTime.UtcNow;
 
             service.Context.Entry(entity).State = EntityState.Modified;
-            service.Context.SaveChanges();
+
+            if (saveChanges)
+                await service.Context.SaveChangesAsync();
 
             return entity;
+        }
+
+        public static async Task<List<T>> SoftDeleteAsync<T>(this ServiceBase<T> service, List<Guid> idList, bool saveChanges = false) where T : class, IEntityBase, ISoftDelete
+        {
+            var entities = await service.Context.Set<T>().Where(x => idList.Contains(x.Id)).ToListAsync();
+
+            foreach (var entity in entities)
+            {
+                entity.IsDeleted = true;
+                entity.DeletedAt = DateTime.UtcNow;
+                service.Context.Entry(entity).State = EntityState.Modified;
+            }
+
+            if (saveChanges)
+                await service.Context.SaveChangesAsync();
+
+            return entities;
+        }
+
+        public static async Task<List<T>> SoftDeleteAsync<T>(this ServiceBase<T> service, List<T> entities, bool saveChanges = false) where T : class, IEntityBase, ISoftDelete
+        {
+            foreach (var entity in entities)
+            {
+                entity.IsDeleted = true;
+                entity.DeletedAt = DateTime.UtcNow;
+
+                service.Context.Entry(entity).State = EntityState.Modified;
+            }
+
+            if (saveChanges)
+                await service.Context.SaveChangesAsync();
+
+            return entities;
         }
     }
 }

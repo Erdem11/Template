@@ -43,7 +43,7 @@ namespace Template.Api.Controllers.V1._0
             var book = _mapper.Map<Book>(request);
 
             book.AddedUserId = HttpContext.GetUserId().GetValueOrDefault();
-            await _bookService.AddAsync(book);
+            await _bookService.AddAsync(book, true);
 
             return Created(book.Id.ToString(), book.Id);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Template.Data;
@@ -8,9 +9,9 @@ namespace Template.Service
 {
     public interface IServiceBase<T> where T : class, IEntityBase
     {
-        public Task<T> AddAsync(T entity);
-        public Task<T> UpdateAsync(T entity);
-        public Task<T> DeleteAsync(T entity);
+        public Task<T> AddAsync(T entity, bool saveChanges = false);
+        public Task<T> UpdateAsync(T entity, bool saveChanges = false);
+        public Task<T> DeleteAsync(T entity, bool saveChanges = false);
         public Task<T> GetAsync(Guid id);
     }
 
@@ -24,26 +25,55 @@ namespace Template.Service
         }
         protected DbSet<T> DbSet => _dbSet ??= Context.Set<T>();
 
-        public async Task<T> AddAsync(T entity)
+        public async Task<T> AddAsync(T entity, bool saveChanges = false)
         {
             await Context.Set<T>().AddAsync(entity);
-            await Context.SaveChangesAsync();
+
+            if (saveChanges)
+                await Context.SaveChangesAsync();
 
             return entity;
         }
 
-        public async Task<T> UpdateAsync(T entity)
+        public async Task<List<T>> AddAsync(List<T> entities, bool saveChanges = false)
+        {
+            await Context.Set<T>().AddRangeAsync(entities);
+
+            if (saveChanges)
+                await Context.SaveChangesAsync();
+
+            return entities;
+        }
+
+        public async Task<T> UpdateAsync(T entity, bool saveChanges = false)
         {
             Context.Entry(entity).State = EntityState.Modified;
-            await Context.SaveChangesAsync();
+
+            if (saveChanges)
+                await Context.SaveChangesAsync();
 
             return entity;
         }
 
-        public async Task<T> DeleteAsync(T entity)
+        public async Task<List<T>> UpdateAsync(List<T> entities, bool saveChanges = false)
+        {
+            foreach (var entity in entities)
+            {
+                Context.Entry(entity).State = EntityState.Modified;
+            }
+
+            if (saveChanges)
+                await Context.SaveChangesAsync();
+
+            return entities;
+        }
+
+        public async Task<T> DeleteAsync(T entity, bool saveChanges = false)
         {
             Context.Set<T>().Remove(entity);
-            await Context.SaveChangesAsync();
+
+            if (saveChanges)
+                await Context.SaveChangesAsync();
 
             return entity;
         }
