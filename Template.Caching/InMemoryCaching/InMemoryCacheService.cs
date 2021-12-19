@@ -32,7 +32,7 @@ namespace Template.Caching.InMemoryCaching
             var name = ((MemberExpression)nameOfProperty.Body).Member.Name;
 
             await Task.Run(() => {
-                Parallel.ForEach(values, async value => {
+                Parallel.ForEach(values, value => {
 
                     if (expire != default)
                     {
